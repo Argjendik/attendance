@@ -11,14 +11,15 @@ RUN apt-get update && \
 # Copy package files first
 COPY package*.json ./
 
-# Install dependencies without running scripts
-RUN npm install --ignore-scripts
+# Install dependencies with unsafe-perm flag
+RUN npm install --unsafe-perm
 
 # Copy source code
 COPY . .
 
-# Generate Prisma client and build
-RUN npm run build && \
+# Ensure proper permissions and run build steps
+RUN chmod -R 755 . && \
+    npm run build && \
     npx prisma generate
 
 # Production stage
@@ -31,6 +32,9 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
+
+# Set correct permissions in production image
+RUN chmod -R 755 .
 
 # Expose port
 EXPOSE 3001

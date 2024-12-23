@@ -34,6 +34,10 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/tsconfig*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production
 
 # Set correct permissions in production image
 RUN chmod -R 755 .
@@ -42,4 +46,4 @@ RUN chmod -R 755 .
 EXPOSE 3001
 
 # Start the server using the built files
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/src/main"]

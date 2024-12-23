@@ -8,9 +8,11 @@ RUN apt-get update && \
     apt-get install -y python3 make g++ && \
     rm -rf /var/lib/apt/lists/*
 
-# Install dependencies first (better layer caching)
+# Copy package files
 COPY package*.json ./
-RUN npm ci
+
+# Install dependencies with legacy peer deps to avoid npm ci issues
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .

@@ -1,6 +1,7 @@
-# Build stage
-FROM node:18.19.0 AS builder
+# Use the latest LTS Node.js image
+FROM node:20-slim AS builder
 
+# Set working directory
 WORKDIR /app
 
 # Install build dependencies
@@ -11,19 +12,19 @@ RUN apt-get update && \
 # Copy package files first
 COPY package*.json ./
 
-# Install dependencies with unsafe-perm flag
+# Install dependencies with unsafe permissions
 RUN npm install --unsafe-perm
 
 # Copy source code
 COPY . .
 
-# Ensure proper permissions and run build steps
+# Set permissions and build the project
 RUN chmod -R 755 . && \
-    npm run build && \
+    npm run build --unsafe-perm && \
     npx prisma generate
 
 # Production stage
-FROM node:18.19.0-slim
+FROM node:20-slim
 
 WORKDIR /app
 
@@ -39,5 +40,5 @@ RUN chmod -R 755 .
 # Expose port
 EXPOSE 3001
 
-# Start the server
-CMD ["npm", "start"]
+# Start the server using the built files
+CMD ["node", "dist/main.js"]

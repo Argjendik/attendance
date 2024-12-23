@@ -35,9 +35,6 @@ RUN npx tsc && \
 # Production stage
 FROM nginx:alpine
 
-# Create nginx user and group
-RUN addgroup -S nginx && adduser -S nginx -G nginx
-
 # Copy the built files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 RUN chown -R nginx:nginx /usr/share/nginx/html

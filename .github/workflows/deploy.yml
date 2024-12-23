@@ -1,0 +1,46 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main      # deploy to production
+      - develop   # deploy to staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    
+    - name: Login to Heroku
+      uses: akhileshns/heroku-deploy@v3.12.14
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_email: ${{ secrets.HEROKU_EMAIL }}
+        heroku_app_name: ${{ github.ref == 'refs/heads/main' && secrets.HEROKU_APP_PROD || secrets.HEROKU_APP_STAGING }}
+        
+    - name: Deploy Backend
+      working-directory: backend
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        APP_NAME: ${{ github.ref == 'refs/heads/main' && secrets.HEROKU_APP_PROD || secrets.HEROKU_APP_STAGING }}-backend
+      run: |
+        heroku container:login
+        heroku container:push web -a $APP_NAME
+        heroku container:release web -a $APP_NAME
+        
+    - name: Deploy Frontend
+      working-directory: frontend
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        APP_NAME: ${{ github.ref == 'refs/heads/main' && secrets.HEROKU_APP_PROD || secrets.HEROKU_APP_STAGING }}-frontend
+      run: |
+        heroku container:login
+        heroku container:push web -a $APP_NAME
+        heroku container:release web -a $APP_NAME 

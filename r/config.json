@@ -1,0 +1,38 @@
+{
+    "server_url": "http://localhost:3001/api/rfid/scan",
+    "vendor_id": 1155,
+    "product_id": 22352,
+    "retry_interval": 30,
+    "card_prefix": "000",
+    "remove_prefix": false,
+    "max_log_entries": 100,
+    "device_name": "SYC ID&IC",
+    "network": {
+        "check_interval": 30,
+        "timeout": 5,
+        "max_retries": 3,
+        "retry_delay": 2
+    },
+    "error_recovery": {
+        "device_reconnect_attempts": 3,
+        "device_reconnect_delay": 2,
+        "offline_mode_enabled": true,
+        "max_offline_records": 1000,
+        "auto_sync_enabled": true,
+        "sync_interval": 300,
+        "sync_batch_size": 50
+    },
+    "startup": {
+        "minimize_to_tray": true,
+        "start_with_windows": true,
+        "check_single_instance": true
+    },
+    "offline_mode": {
+        "notification_color": "#FFA500",
+        "notification_sound": true,
+        "export_format": "csv",
+        "backup_enabled": true,
+        "backup_interval": 3600,
+        "max_backup_files": 5
+    }
+}

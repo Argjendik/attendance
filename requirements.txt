@@ -1,0 +1,6 @@
+hidapi==0.14.0
+requests==2.31.0
+Pillow==10.0.0
+pystray==0.19.4
+plyer==2.1.0
+pynput==1.7.6 

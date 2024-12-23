@@ -1,5 +1,5 @@
-# Use the latest LTS Node.js image
-FROM node:20-slim AS builder
+# Build stage
+FROM node:18-slim AS builder
 
 # Set working directory
 WORKDIR /app
@@ -9,22 +9,25 @@ RUN apt-get update && \
     apt-get install -y python3 make g++ && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy package files first
+# Copy package files and install dependencies
 COPY package*.json ./
+COPY tsconfig*.json ./
+COPY prisma ./prisma/
 
-# Install dependencies with unsafe permissions
+# Install dependencies
 RUN npm install --unsafe-perm
 
 # Copy source code
 COPY . .
 
-# Set permissions and build the project
-RUN chmod -R 755 . && \
-    npm run build --unsafe-perm && \
-    npx prisma generate
+# Generate Prisma client first
+RUN npx prisma generate
+
+# Build the application
+RUN npm run build
 
 # Production stage
-FROM node:20-slim
+FROM node:18-slim
 
 WORKDIR /app
 

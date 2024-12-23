@@ -1,30 +1,46 @@
 # Build stage
-FROM node:18.19.0 as build
+FROM node:18-slim AS build
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies first (better layer caching)
-COPY package*.json ./
-RUN npm ci
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y python3 make g++ && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy source code
+# Copy package files and TypeScript config
+COPY package*.json tsconfig*.json ./
+
+# Install dependencies and TypeScript
+RUN npm ci --ignore-scripts && \
+    npm install -g typescript && \
+    npm install typescript --save-dev && \
+    npm install -g vite
+
+# Ensure TypeScript binaries have proper permissions
+RUN chmod -R 755 node_modules/.bin && \
+    chmod -R 755 /usr/local/lib/node_modules
+
+# Copy the rest of the application code
 COPY . .
 
+# Ensure proper permissions
+RUN chmod -R 755 .
+
 # Build the application
-RUN npm run build
+RUN npx tsc && \
+    npx vite build
 
 # Production stage
 FROM nginx:alpine
 
-# Copy built assets from build stage
+# Copy the built files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy nginx configuration if you have any custom config
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
 EXPOSE 80
 
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"] 

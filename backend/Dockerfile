@@ -14,19 +14,21 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci
+# Install dependencies and global tools
+RUN npm ci && \
+    npm install -g prisma @nestjs/cli && \
+    chmod -R 755 /usr/local/lib/node_modules
 
 # Add node_modules/.bin to PATH and fix permissions
-ENV PATH="/app/node_modules/.bin:$PATH"
+ENV PATH="/app/node_modules/.bin:/usr/local/lib/node_modules:$PATH"
 RUN chmod -R 755 node_modules/.bin
 
 # Copy the rest of the application code
 COPY . .
 
 # Generate Prisma client and build the application
-RUN npx prisma generate && \
-    npx nest build
+RUN prisma generate && \
+    nest build
 
 # Production stage
 FROM node:18-slim

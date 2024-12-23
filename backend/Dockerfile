@@ -16,13 +16,15 @@ COPY prisma ./prisma/
 
 # Install dependencies with npm ci and set correct permissions
 RUN npm ci && \
+    npm install -g rimraf && \
     chmod -R 777 node_modules/.bin
 
 # Copy the rest of the application code
 COPY . .
 
-# Generate Prisma client and build the application
-RUN npm run build && \
+# Clean dist directory and generate build
+RUN rm -rf dist && \
+    npm run build --if-present && \
     npx prisma generate
 
 # Production stage
@@ -39,6 +41,7 @@ COPY --from=build /app/tsconfig*.json ./
 
 # Install production dependencies only
 RUN npm ci --only=production && \
+    npm install -g rimraf && \
     chmod -R 777 node_modules/.bin
 
 # Set correct permissions in production image

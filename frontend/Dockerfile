@@ -38,9 +38,15 @@ FROM nginx:alpine
 # Copy the built files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration if you have any custom config
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Create nginx configuration for Heroku
+RUN echo 'server { \n\
+    listen $PORT; \n\
+    location / { \n\
+        root /usr/share/nginx/html; \n\
+        index index.html index.htm; \n\
+        try_files $uri $uri/ /index.html; \n\
+    } \n\
+}' > /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"] 
+# Use shell to substitute environment variables in nginx config
+CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 

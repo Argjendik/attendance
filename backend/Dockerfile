@@ -4,26 +4,29 @@ FROM node:18-slim AS build
 # Set working directory
 WORKDIR /app
 
-# Create app user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nestjs && \
-    chown -R nestjs:nodejs /app
-
 # Install build dependencies
 RUN apt-get update && \
     apt-get install -y python3 make g++ && \
     rm -rf /var/lib/apt/lists/*
 
-# Switch to app user
-USER nestjs
+# Create app user and set up directories
+RUN mkdir -p /home/nestjs/.npm && \
+    addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 --home /home/nestjs nestjs && \
+    chown -R nestjs:nodejs /app && \
+    chown -R nestjs:nodejs /home/nestjs
 
 # Copy package files and install dependencies
-COPY --chown=nestjs:nodejs package*.json ./
-COPY --chown=nestjs:nodejs tsconfig*.json ./
-COPY --chown=nestjs:nodejs prisma ./prisma/
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm ci
+# Install dependencies as root
+RUN npm ci && \
+    chown -R nestjs:nodejs /app
+
+# Switch to app user
+USER nestjs
 
 # Copy the rest of the application code
 COPY --chown=nestjs:nodejs . .
@@ -35,9 +38,10 @@ RUN npm run build && \
 # Production stage
 FROM node:18-slim
 
-# Create app user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nestjs
+# Create app user and set up directories
+RUN mkdir -p /home/nestjs/.npm && \
+    addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 --home /home/nestjs nestjs
 
 WORKDIR /app
 
@@ -47,6 +51,10 @@ COPY --from=build --chown=nestjs:nodejs /app/node_modules ./node_modules
 COPY --from=build --chown=nestjs:nodejs /app/package*.json ./
 COPY --from=build --chown=nestjs:nodejs /app/prisma ./prisma
 COPY --from=build --chown=nestjs:nodejs /app/tsconfig*.json ./
+
+# Set ownership
+RUN chown -R nestjs:nodejs /app && \
+    chown -R nestjs:nodejs /home/nestjs
 
 # Switch to app user
 USER nestjs

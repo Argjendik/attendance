@@ -28,6 +28,9 @@ RUN npm ci && \
     chown -R nestjs:nodejs /usr/local/lib/node_modules && \
     chmod -R 755 /usr/local/lib/node_modules
 
+# Add node_modules/.bin to PATH
+ENV PATH="/app/node_modules/.bin:$PATH"
+
 # Switch to app user
 USER nestjs
 
@@ -36,7 +39,7 @@ COPY --chown=nestjs:nodejs . .
 
 # Clean dist directory and generate build
 RUN rm -rf dist && \
-    nest build && \
+    npx nest build && \
     npx prisma generate
 
 # Production stage

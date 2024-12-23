@@ -1,14 +1,16 @@
 # Use specific Node.js version
-FROM node:18.19.0-alpine
+FROM node:18.19.0
 
 WORKDIR /app
 
 # Install build dependencies
-RUN apk add --no-cache python3 make g++
+RUN apt-get update && \
+    apt-get install -y python3 make g++ && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install dependencies first (better layer caching)
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source code
 COPY . .

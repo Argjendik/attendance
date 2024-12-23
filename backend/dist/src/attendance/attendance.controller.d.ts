@@ -10,25 +10,26 @@ export declare class AttendanceController {
                 office: {
                     id: number;
                     name: string;
-                    createdAt: Date;
-                    updatedAt: Date;
                     location: string;
                     checkInMethods: string[];
                     expectedCheckIn: string;
                     expectedCheckOut: string;
+                    createdAt: Date;
+                    updatedAt: Date;
                 };
             } & {
                 id: number;
-                status: string;
-                email: string | null;
                 name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                email: string | null;
                 rfidCode: string | null;
+                status: string;
                 officeId: number;
             };
         } & {
             id: number;
+            status: string | null;
             agentId: number;
             action: string;
             timestamp: Date;
@@ -36,7 +37,6 @@ export declare class AttendanceController {
             recordedBy: string | null;
             expectedIn: string;
             expectedOut: string;
-            status: string | null;
             lastCheckIn: Date | null;
             workingHours: number | null;
         };
@@ -57,25 +57,26 @@ export declare class AttendanceController {
                     office: {
                         id: number;
                         name: string;
-                        createdAt: Date;
-                        updatedAt: Date;
                         location: string;
                         checkInMethods: string[];
                         expectedCheckIn: string;
                         expectedCheckOut: string;
+                        createdAt: Date;
+                        updatedAt: Date;
                     };
                 } & {
                     id: number;
-                    status: string;
-                    email: string | null;
                     name: string;
                     createdAt: Date;
                     updatedAt: Date;
+                    email: string | null;
                     rfidCode: string | null;
+                    status: string;
                     officeId: number;
                 };
             } & {
                 id: number;
+                status: string | null;
                 agentId: number;
                 action: string;
                 timestamp: Date;
@@ -83,7 +84,6 @@ export declare class AttendanceController {
                 recordedBy: string | null;
                 expectedIn: string;
                 expectedOut: string;
-                status: string | null;
                 lastCheckIn: Date | null;
                 workingHours: number | null;
             })[];
@@ -105,25 +105,26 @@ export declare class AttendanceController {
                 office: {
                     id: number;
                     name: string;
-                    createdAt: Date;
-                    updatedAt: Date;
                     location: string;
                     checkInMethods: string[];
                     expectedCheckIn: string;
                     expectedCheckOut: string;
+                    createdAt: Date;
+                    updatedAt: Date;
                 };
             } & {
                 id: number;
-                status: string;
-                email: string | null;
                 name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                email: string | null;
                 rfidCode: string | null;
+                status: string;
                 officeId: number;
             };
         } & {
             id: number;
+            status: string | null;
             agentId: number;
             action: string;
             timestamp: Date;
@@ -131,7 +132,6 @@ export declare class AttendanceController {
             recordedBy: string | null;
             expectedIn: string;
             expectedOut: string;
-            status: string | null;
             lastCheckIn: Date | null;
             workingHours: number | null;
         };

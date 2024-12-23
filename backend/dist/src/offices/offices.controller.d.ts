@@ -11,8 +11,8 @@ export declare class OfficesController {
                     name: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    rfidCode: string | null;
                     email: string | null;
+                    rfidCode: string | null;
                     status: string;
                     officeId: number;
                 }[];
@@ -53,8 +53,8 @@ export declare class OfficesController {
                     name: string;
                     createdAt: Date;
                     updatedAt: Date;
-                    rfidCode: string | null;
                     email: string | null;
+                    rfidCode: string | null;
                     status: string;
                     officeId: number;
                 }[];

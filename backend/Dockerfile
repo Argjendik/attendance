@@ -1,27 +1,24 @@
-# Use Node.js LTS version
-FROM node:18-alpine
+# Use specific Node.js version
+FROM node:18.19.0-alpine
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package files
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
+
+# Install dependencies first (better layer caching)
 COPY package*.json ./
-COPY prisma ./prisma/
-
-# Install dependencies
-RUN npm install
+RUN npm ci --only=production
 
 # Copy source code
 COPY . .
 
-# Generate Prisma client
-RUN npx prisma generate
+# Generate Prisma client and build
+RUN npx prisma generate && \
+    npm run build
 
-# Build the application
-RUN npm run build
+# Start the server
+CMD ["npm", "start"]
 
 # Expose the port the app runs on
 EXPOSE 3001
-
-# Start the application
-CMD ["npm", "run", "start:prod"] 

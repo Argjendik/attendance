@@ -14,14 +14,16 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies with npm ci
-RUN npm ci
+# Install dependencies with npm ci and set correct permissions
+RUN npm ci && \
+    chmod -R 777 node_modules/.bin
 
 # Copy the rest of the application code
 COPY . .
 
 # Generate Prisma client and build the application
-RUN npm run postinstall
+RUN npm run build && \
+    npx prisma generate
 
 # Production stage
 FROM node:18-slim
@@ -36,7 +38,8 @@ COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/tsconfig*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm ci --only=production && \
+    chmod -R 777 node_modules/.bin
 
 # Set correct permissions in production image
 RUN chmod -R 755 .

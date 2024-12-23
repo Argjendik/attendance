@@ -19,21 +19,21 @@ export declare class AuthService {
         office: {
             id: number;
             name: string;
-            createdAt: Date;
-            updatedAt: Date;
             location: string;
             checkInMethods: string[];
             expectedCheckIn: string;
             expectedCheckOut: string;
+            createdAt: Date;
+            updatedAt: Date;
         };
     } & {
         id: number;
         name: string;
-        rfidCode: string | null;
-        email: string | null;
-        status: string;
-        officeId: number;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
+        rfidCode: string | null;
+        status: string;
+        officeId: number;
     }>;
 }

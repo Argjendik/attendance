@@ -171,3 +171,13 @@ For support and bug reports, please create an issue in the repository or contact
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Deployment URLs
+
+### Staging Environment
+- Frontend: https://staging-frontend-arjan-dc3f2797bf0a.herokuapp.com/
+- Backend: https://staging-backend-fda18e3a12e2.herokuapp.com/
+
+### Production Environment
+- Frontend: https://prod-frontend-arjan-d6eb11acebc5.herokuapp.com/
+- Backend: https://prod-backend-arjan-ef5e8a8857c6.herokuapp.com/

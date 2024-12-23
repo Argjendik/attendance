@@ -1,27 +1,54 @@
-# Use Node.js LTS version
-FROM node:18-alpine
+# Build stage
+FROM node:18-slim AS build
 
-# Create app directory
-WORKDIR /usr/src/app
+# Set working directory
+WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y python3 make g++ && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy configuration files first
+COPY package*.json tsconfig*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm install
+# Install dependencies and TypeScript
+RUN npm ci --ignore-scripts && \
+    npm install -g typescript && \
+    npm install typescript --save-dev
 
-# Copy source code
+# Ensure TypeScript binaries have proper permissions
+RUN chmod -R 755 node_modules/.bin && \
+    chmod -R 755 /usr/local/lib/node_modules
+
+# Copy the rest of the application code
 COPY . .
 
-# Generate Prisma client
-RUN npx prisma generate
+# Ensure proper permissions
+RUN chmod -R 755 .
 
-# Build the application
-RUN npm run build
+# Generate Prisma client and build explicitly
+RUN npx prisma generate && \
+    npx tsc && \
+    npm run build
 
-# Expose the port the app runs on
+# Production stage
+FROM node:18-slim
+
+WORKDIR /app
+
+# Copy built files and dependencies
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/prisma ./prisma
+
+# Set correct permissions in production image
+RUN chmod -R 755 .
+
+# Expose port
 EXPOSE 3001
 
-# Start the application
-CMD ["npm", "run", "start:prod"] 
+# Start the server using the built files
+CMD ["node", "dist/main.js"]

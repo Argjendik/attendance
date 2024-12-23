@@ -14,9 +14,6 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Install serve to run the built app
-RUN npm install -g serve
-
 # Production stage
 FROM nginx:alpine
 
@@ -31,9 +28,3 @@ EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"] 
-
-# Start the server
-CMD ["serve", "-s", "dist", "-l", "3000"]
-
-# Expose the port the app runs on
-EXPOSE 3000 

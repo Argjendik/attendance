@@ -10,17 +10,16 @@ RUN apt-get update && \
 
 # Copy package files first
 COPY package*.json ./
-COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm install
+# Install dependencies without running scripts
+RUN npm install --ignore-scripts
 
 # Copy source code
 COPY . .
 
 # Generate Prisma client and build
-RUN npx prisma generate
-RUN npm run build
+RUN npm run build && \
+    npx prisma generate
 
 # Production stage
 FROM node:18.19.0-slim

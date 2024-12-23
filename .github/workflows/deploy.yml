@@ -18,29 +18,22 @@ jobs:
       with:
         node-version: '18'
     
-    - name: Login to Heroku
-      uses: akhileshns/heroku-deploy@v3.12.14
-      with:
-        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-        heroku_email: ${{ secrets.HEROKU_EMAIL }}
-        heroku_app_name: ${{ github.ref == 'refs/heads/main' && secrets.HEROKU_APP_PROD || secrets.HEROKU_APP_STAGING }}
-        
     - name: Deploy Backend
-      working-directory: backend
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        APP_NAME: ${{ github.ref == 'refs/heads/main' && secrets.HEROKU_APP_PROD || secrets.HEROKU_APP_STAGING }}-backend
+        APP_NAME: ${{ github.ref == 'refs/heads/main' && 'prod-backend-arjan' || 'staging-backend' }}
       run: |
         heroku container:login
+        cd backend
         heroku container:push web -a $APP_NAME
         heroku container:release web -a $APP_NAME
         
     - name: Deploy Frontend
-      working-directory: frontend
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        APP_NAME: ${{ github.ref == 'refs/heads/main' && secrets.HEROKU_APP_PROD || secrets.HEROKU_APP_STAGING }}-frontend
+        APP_NAME: ${{ github.ref == 'refs/heads/main' && 'prod-frontend-arjan' || 'staging-frontend-arjan' }}
       run: |
         heroku container:login
+        cd frontend
         heroku container:push web -a $APP_NAME
         heroku container:release web -a $APP_NAME 

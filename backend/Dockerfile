@@ -13,18 +13,24 @@ RUN apt-get update && \
 COPY package*.json tsconfig*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies with npm ci (without running scripts)
-RUN npm ci --ignore-scripts
+# Install dependencies and TypeScript
+RUN npm ci --ignore-scripts && \
+    npm install -g typescript && \
+    npm install typescript --save-dev
+
+# Ensure TypeScript binaries have proper permissions
+RUN chmod -R 755 node_modules/.bin && \
+    chmod -R 755 /usr/local/lib/node_modules
 
 # Copy the rest of the application code
 COPY . .
 
 # Ensure proper permissions
-RUN chmod -R 755 node_modules/.bin && \
-    chmod -R 755 .
+RUN chmod -R 755 .
 
 # Generate Prisma client and build explicitly
 RUN npx prisma generate && \
+    npx tsc && \
     npm run build
 
 # Production stage

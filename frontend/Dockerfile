@@ -33,34 +33,33 @@ RUN npx tsc && \
     npx vite build
 
 # Production stage
-FROM nginx:1.25
+FROM node:18.19.0-slim
 
-# Copy the built files to nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+# Create app directory
+WORKDIR /app
 
-# Create nginx configuration
-RUN echo 'daemon off;\n\
-error_log stderr;\n\
-events { worker_connections 1024; }\n\
-http {\n\
-    access_log /dev/stdout;\n\
-    default_type application/octet-stream;\n\
-    types { text/html html htm shtml; }\n\
-    keepalive_timeout 30;\n\
-    server {\n\
-        listen $PORT;\n\
-        root /usr/share/nginx/html;\n\
-        index index.html;\n\
-        location / {\n\
-            try_files $uri $uri/ /index.html;\n\
-            add_header Cache-Control "no-cache";\n\
-        }\n\
-        location /static/ {\n\
-            expires 1y;\n\
-            add_header Cache-Control "public";\n\
-        }\n\
+# Install serve
+RUN npm install -g serve
+
+# Copy built files from build stage
+COPY --from=build /app/dist .
+
+# Create a static.json file for Heroku
+RUN echo '{\n\
+  "root": ".",\n\
+  "clean_urls": true,\n\
+  "routes": {\n\
+    "/**": "index.html"\n\
+  },\n\
+  "headers": {\n\
+    "/**": {\n\
+      "Cache-Control": "no-store, no-cache"\n\
+    },\n\
+    "/static/**": {\n\
+      "Cache-Control": "public, max-age=31536000"\n\
     }\n\
-}' > /etc/nginx/nginx.conf.template
+  }\n\
+}' > static.json
 
-# Use envsubst to replace $PORT at runtime
-CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx" 
+# Start serve
+CMD serve -s . -l $PORT 

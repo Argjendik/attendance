@@ -33,24 +33,34 @@ RUN npx tsc && \
     npx vite build
 
 # Production stage
-FROM nginx:alpine
+FROM nginx:1.25
 
 # Copy the built files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Create a simple nginx configuration
-RUN echo 'events { worker_connections 1024; }\n\
+# Create nginx configuration
+RUN echo 'daemon off;\n\
+error_log stderr;\n\
+events { worker_connections 1024; }\n\
 http {\n\
-    include /etc/nginx/mime.types;\n\
+    access_log /dev/stdout;\n\
+    default_type application/octet-stream;\n\
+    types { text/html html htm shtml; }\n\
+    keepalive_timeout 30;\n\
     server {\n\
         listen $PORT;\n\
         root /usr/share/nginx/html;\n\
         index index.html;\n\
         location / {\n\
             try_files $uri $uri/ /index.html;\n\
+            add_header Cache-Control "no-cache";\n\
+        }\n\
+        location /static/ {\n\
+            expires 1y;\n\
+            add_header Cache-Control "public";\n\
         }\n\
     }\n\
 }' > /etc/nginx/nginx.conf.template
 
 # Use envsubst to replace $PORT at runtime
-CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'" 
+CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx" 

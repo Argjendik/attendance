@@ -21,8 +21,7 @@ RUN npm ci
 COPY . .
 
 # Generate Prisma client and build the application
-RUN npx prisma generate && \
-    npm run build
+RUN npm run postinstall
 
 # Production stage
 FROM node:18-slim
@@ -46,4 +45,4 @@ RUN chmod -R 755 .
 EXPOSE 3001
 
 # Start the server using the built files
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:prod"]

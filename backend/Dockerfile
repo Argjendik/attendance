@@ -16,7 +16,7 @@ COPY prisma ./prisma/
 
 # Install dependencies with npm ci and set correct permissions
 RUN npm ci && \
-    npm install -g rimraf && \
+    npm install -g rimraf @nestjs/cli && \
     chmod -R 777 node_modules/.bin
 
 # Copy the rest of the application code
@@ -24,7 +24,7 @@ COPY . .
 
 # Clean dist directory and generate build
 RUN rm -rf dist && \
-    npm run build --if-present && \
+    nest build && \
     npx prisma generate
 
 # Production stage

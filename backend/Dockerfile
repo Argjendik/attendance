@@ -14,21 +14,26 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies and Prisma globally
-RUN npm install --unsafe-perm && \
-    npm install -g prisma
+# Install dependencies, TypeScript, and Prisma
+RUN npm ci && \
+    npm install -g typescript prisma && \
+    npm install typescript --save-dev
+
+# Ensure TypeScript and other binaries have proper permissions
+RUN chmod -R 755 node_modules/.bin
 
 # Copy source code
 COPY . .
 
-# Ensure proper permissions
+# Ensure proper permissions for all files
 RUN chmod -R 755 .
 
 # Generate Prisma client with unsafe permissions
 RUN npx --unsafe-perm prisma generate
 
-# Build the application
-RUN npm run build
+# Verify TypeScript installation and build
+RUN npx tsc --version && \
+    npm run build
 
 # Production stage
 FROM node:18-slim

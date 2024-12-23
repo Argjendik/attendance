@@ -23,16 +23,20 @@ RUN npx tsc && \
     npx vite build
 
 # Production stage
-FROM node:18.19.0-slim
+FROM nginx:1.25-alpine
 
-# Create app directory
-WORKDIR /app
+# Copy the built files to NGINX's default directory
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Install serve
-RUN npm install -g serve
+# Create a simple nginx configuration
+RUN echo 'server {\n\
+    listen $PORT;\n\
+    root /usr/share/nginx/html;\n\
+    index index.html;\n\
+    location / {\n\
+        try_files $uri $uri/ /index.html;\n\
+    }\n\
+}' > /etc/nginx/conf.d/default.conf.template
 
-# Copy built files from build stage
-COPY --from=build /app/dist .
-
-# Start serve
-CMD serve -s . -l $PORT 
+# Use envsubst to replace $PORT at runtime and start nginx
+CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 

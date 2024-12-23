@@ -37,27 +37,16 @@ FROM nginx:alpine
 
 # Copy the built files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
-RUN chown -R nginx:nginx /usr/share/nginx/html
 
-# Create a custom nginx configuration that uses $PORT
+# Create a custom nginx configuration that uses $PORT or defaults to 8080
 RUN echo 'server { \n\
-    listen $PORT; \n\
+    listen ${PORT:-8080}; \n\
     location / { \n\
         root /usr/share/nginx/html; \n\
         index index.html index.htm; \n\
         try_files $uri $uri/ /index.html; \n\
     } \n\
 }' > /etc/nginx/conf.d/default.conf.template
-
-# Set proper permissions for nginx directories
-RUN chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    chown -R nginx:nginx /etc/nginx/conf.d && \
-    touch /var/run/nginx.pid && \
-    chown -R nginx:nginx /var/run/nginx.pid
-
-# Switch to nginx user
-USER nginx
 
 # Use envsubst to replace $PORT at runtime
 CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 

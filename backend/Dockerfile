@@ -9,22 +9,22 @@ RUN apt-get update && \
     apt-get install -y python3 make g++ && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy package files first
-COPY package*.json ./
+# Copy configuration files first
+COPY package*.json tsconfig*.json ./
+COPY prisma ./prisma/
 
-# Install dependencies with npm ci
-RUN npm ci
+# Install dependencies with npm ci (without running scripts)
+RUN npm ci --ignore-scripts
 
 # Copy the rest of the application code
 COPY . .
 
-# Ensure TypeScript and other binaries have executable permissions
+# Ensure proper permissions
 RUN chmod -R 755 node_modules/.bin && \
     chmod -R 755 .
 
-# Generate Prisma client and build
+# Generate Prisma client and build explicitly
 RUN npx prisma generate && \
-    npx tsc && \
     npm run build
 
 # Production stage

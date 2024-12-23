@@ -23,25 +23,16 @@ RUN npx tsc && \
     npx vite build
 
 # Production stage
-FROM nginx:1.25-alpine
+FROM node:18.19.0-slim
 
-# Copy the built files to NGINX's default directory
-COPY --from=build /app/dist /usr/share/nginx/html
+# Create app directory
+WORKDIR /app
 
-# Create a dynamic NGINX configuration template for Heroku
-RUN echo 'events { worker_connections 1024; }\n\
-http {\n\
-    include /etc/nginx/mime.types;\n\
-    server {\n\
-        listen ${PORT} default_server;\n\
-        server_name _;\n\
-        root /usr/share/nginx/html;\n\
-        index index.html;\n\
-        location / {\n\
-            try_files $uri $uri/ /index.html;\n\
-        }\n\
-    }\n\
-}' > /etc/nginx/nginx.conf.template
+# Install serve
+RUN npm install -g serve
 
-# CMD to replace $PORT and start NGINX
-CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'" 
+# Copy built files from build stage
+COPY --from=build /app/dist .
+
+# Start serve
+CMD serve -s . -l $PORT 

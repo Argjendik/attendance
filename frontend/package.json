@@ -26,6 +26,7 @@
     "@mui/x-date-pickers": "^7.23.3",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "@types/react-toastify": "^4.0.2",
     "@vitejs/plugin-react": "^4.0.3",
     "typescript": "^5.1.6",
     "vite": "^4.4.7"

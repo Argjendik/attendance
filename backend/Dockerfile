@@ -14,14 +14,18 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 COPY prisma ./prisma/
 
-# Install dependencies
-RUN npm install --unsafe-perm
+# Install dependencies and Prisma globally
+RUN npm install --unsafe-perm && \
+    npm install -g prisma
 
 # Copy source code
 COPY . .
 
-# Generate Prisma client first
-RUN npx prisma generate
+# Ensure proper permissions
+RUN chmod -R 755 .
+
+# Generate Prisma client with unsafe permissions
+RUN npx --unsafe-perm prisma generate
 
 # Build the application
 RUN npm run build

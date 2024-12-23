@@ -16,17 +16,16 @@ COPY prisma ./prisma/
 
 # Install dependencies with npm ci and set correct permissions
 RUN npm ci && \
-    npm install -g rimraf @nestjs/cli prisma && \
-    chmod -R 777 node_modules/.bin && \
-    chmod -R 777 /usr/local/lib/node_modules
+    npm install -g rimraf && \
+    chmod -R 777 node_modules/.bin
 
 # Copy the rest of the application code
 COPY . .
 
 # Clean dist directory and generate build
 RUN rm -rf dist && \
-    nest build && \
-    prisma generate
+    npx nest build && \
+    npx prisma generate
 
 # Production stage
 FROM node:18-slim
@@ -40,11 +39,9 @@ COPY --from=build /app/package*.json ./
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/tsconfig*.json ./
 
-# Install production dependencies only
+# Install production dependencies only and set permissions
 RUN npm ci --only=production && \
-    npm install -g rimraf prisma && \
-    chmod -R 777 node_modules/.bin && \
-    chmod -R 777 /usr/local/lib/node_modules
+    chmod -R 777 node_modules/.bin
 
 # Set correct permissions in production image
 RUN chmod -R 755 .

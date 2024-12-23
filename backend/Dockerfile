@@ -8,14 +8,11 @@ RUN apt-get update && \
     apt-get install -y python3 make g++ && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies with legacy peer deps to avoid npm ci issues
-RUN npm install --legacy-peer-deps
-
-# Copy source code
+# Copy all source files first
 COPY . .
+
+# Install dependencies with legacy peer deps
+RUN npm install --legacy-peer-deps
 
 # Generate Prisma client and build
 RUN npx prisma generate && \

@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-slim AS build
+FROM node:18.19.0 as build
 
 # Set working directory
 WORKDIR /app
@@ -38,7 +38,7 @@ FROM nginx:alpine
 # Copy the built files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Create nginx configuration for Heroku
+# Create a custom nginx configuration that uses $PORT
 RUN echo 'server { \n\
     listen $PORT; \n\
     location / { \n\
@@ -46,7 +46,7 @@ RUN echo 'server { \n\
         index index.html index.htm; \n\
         try_files $uri $uri/ /index.html; \n\
     } \n\
-}' > /etc/nginx/conf.d/default.conf
+}' > /etc/nginx/conf.d/default.conf.template
 
-# Use shell to substitute environment variables in nginx config
-CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 
+# Use envsubst to replace $PORT at runtime
+CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 

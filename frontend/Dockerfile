@@ -32,17 +32,26 @@ RUN chmod -R 755 .
 RUN npx tsc && \
     npx vite build
 
-# Nginx stage
+# Production stage
 FROM nginx:1.25-alpine
 
-# Copy nginx configuration template
-COPY nginx.conf.template /etc/nginx/nginx.conf.template
-
-# Copy built files from build stage
+# Copy the built files to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Make port 8080 available
-EXPOSE 8080
+# Create a simple nginx configuration
+RUN echo 'events { worker_connections 1024; }\n\
+http {\n\
+    include /etc/nginx/mime.types;\n\
+    server {\n\
+        listen $PORT default_server;\n\
+        server_name _;\n\
+        root /usr/share/nginx/html;\n\
+        index index.html;\n\
+        location / {\n\
+            try_files $uri $uri/ /index.html;\n\
+        }\n\
+    }\n\
+}' > /etc/nginx/nginx.conf.template
 
-# Start nginx with environment variable substitution
+# Use envsubst to replace $PORT at runtime
 CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'" 

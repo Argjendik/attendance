@@ -23,7 +23,10 @@ COPY prisma ./prisma/
 
 # Install dependencies as root
 RUN npm ci && \
-    chown -R nestjs:nodejs /app
+    npm install -g rimraf && \
+    chown -R nestjs:nodejs /app && \
+    chown -R nestjs:nodejs /usr/local/lib/node_modules && \
+    chmod -R 755 /usr/local/lib/node_modules
 
 # Switch to app user
 USER nestjs
@@ -32,7 +35,8 @@ USER nestjs
 COPY --chown=nestjs:nodejs . .
 
 # Clean dist directory and generate build
-RUN npm run build && \
+RUN rm -rf dist && \
+    nest build && \
     npx prisma generate
 
 # Production stage

@@ -46,4 +46,4 @@ RUN chmod -R 755 .
 EXPOSE 3001
 
 # Start the server using the built files
-CMD ["node", "dist/src/main"]
+CMD ["node", "dist/main"]

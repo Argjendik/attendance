@@ -32,34 +32,17 @@ RUN chmod -R 755 .
 RUN npx tsc && \
     npx vite build
 
-# Production stage
-FROM node:18.19.0-slim
+# Nginx stage
+FROM nginx:1.25-alpine
 
-# Create app directory
-WORKDIR /app
-
-# Install serve
-RUN npm install -g serve
+# Copy nginx configuration template
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
 
 # Copy built files from build stage
-COPY --from=build /app/dist .
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Create a static.json file for Heroku
-RUN echo '{\n\
-  "root": ".",\n\
-  "clean_urls": true,\n\
-  "routes": {\n\
-    "/**": "index.html"\n\
-  },\n\
-  "headers": {\n\
-    "/**": {\n\
-      "Cache-Control": "no-store, no-cache"\n\
-    },\n\
-    "/static/**": {\n\
-      "Cache-Control": "public, max-age=31536000"\n\
-    }\n\
-  }\n\
-}' > static.json
+# Make port 8080 available
+EXPOSE 8080
 
-# Start serve
-CMD serve -s . -l $PORT 
+# Start nginx with environment variable substitution
+CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'" 

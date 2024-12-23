@@ -33,19 +33,24 @@ RUN npx tsc && \
     npx vite build
 
 # Production stage
-FROM node:18.19.0-slim
+FROM nginx:alpine
 
-# Create app directory
-WORKDIR /app
+# Copy the built files to nginx
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Install serve
-RUN npm install -g serve
+# Create a simple nginx configuration
+RUN echo 'events { worker_connections 1024; }\n\
+http {\n\
+    include /etc/nginx/mime.types;\n\
+    server {\n\
+        listen $PORT;\n\
+        root /usr/share/nginx/html;\n\
+        index index.html;\n\
+        location / {\n\
+            try_files $uri $uri/ /index.html;\n\
+        }\n\
+    }\n\
+}' > /etc/nginx/nginx.conf.template
 
-# Copy built files from build stage
-COPY --from=build /app/dist .
-
-# Set environment variable for port
-ENV PORT=8080
-
-# Start serve
-CMD serve -s . -l $PORT 
+# Use envsubst to replace $PORT at runtime
+CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'" 

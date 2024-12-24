@@ -28,17 +28,8 @@ FROM nginx:1.25-alpine
 # Copy the built files to NGINX's default directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Create nginx configuration with immediate port binding
-RUN echo '#!/bin/sh\n\
-set -e\n\
-PORT="${PORT:-8080}"\n\
-echo "Using port: $PORT"\n\
-sed -i "s/listen [0-9]*/listen $PORT/" /etc/nginx/conf.d/default.conf\n\
-exec nginx -g "daemon off;"' > /docker-entrypoint.sh && \
-    chmod +x /docker-entrypoint.sh
-
-# Default nginx configuration
-RUN echo 'server {\n\
+# Default nginx configuration - create it first
+RUN printf 'server {\n\
     listen 8080;\n\
     server_name _;\n\
     root /usr/share/nginx/html;\n\
@@ -46,7 +37,16 @@ RUN echo 'server {\n\
     location / {\n\
         try_files $uri $uri/ /index.html;\n\
     }\n\
-}' > /etc/nginx/conf.d/default.conf
+}\n' > /etc/nginx/conf.d/default.conf
+
+# Create entrypoint script
+RUN printf '#!/bin/sh\n\
+set -e\n\
+PORT="${PORT:-8080}"\n\
+echo "Using port: $PORT"\n\
+sed -i "s/listen 8080/listen $PORT/" /etc/nginx/conf.d/default.conf\n\
+exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh && \
+    chmod +x /docker-entrypoint.sh
 
 # Set environment variable with a default value
 ENV PORT=8080

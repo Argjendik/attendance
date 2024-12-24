@@ -28,28 +28,24 @@ FROM nginx:1.25-alpine
 # Copy the built files to NGINX's default directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Default nginx configuration - create it first
-RUN printf 'server {\n\
-    listen 8080;\n\
-    server_name _;\n\
-    root /usr/share/nginx/html;\n\
-    index index.html;\n\
-    location / {\n\
-        try_files $uri $uri/ /index.html;\n\
-    }\n\
-}\n' > /etc/nginx/conf.d/default.conf
+# Remove the default Nginx configuration file
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Create entrypoint script
-RUN printf '#!/bin/sh\n\
-set -e\n\
-PORT="${PORT:-8080}"\n\
-echo "Using port: $PORT"\n\
-sed -i "s/listen 8080/listen $PORT/" /etc/nginx/conf.d/default.conf\n\
-exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh && \
-    chmod +x /docker-entrypoint.sh
+# Copy a basic nginx configuration file
+COPY <<EOF /etc/nginx/conf.d/default.conf.template
+server {
+    listen \${PORT:-8080};
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+    location / {
+        try_files \$uri \$uri/ /index.html;
+    }
+}
+EOF
 
 # Set environment variable with a default value
 ENV PORT=8080
 
-# Use the entrypoint script
-CMD ["/docker-entrypoint.sh"] 
+# Start Nginx
+CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 

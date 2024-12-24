@@ -28,24 +28,25 @@ FROM nginx:1.25-alpine
 # Copy the built files to NGINX's default directory
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Remove the default Nginx configuration file
-RUN rm /etc/nginx/conf.d/default.conf
-
-# Copy a basic nginx configuration file
-COPY <<EOF /etc/nginx/conf.d/default.conf.template
-server {
-    listen \${PORT:-8080};
-    server_name _;
-    root /usr/share/nginx/html;
-    index index.html;
-    location / {
-        try_files \$uri \$uri/ /index.html;
-    }
-}
-EOF
+# Create a simple shell script to handle configuration and startup
+RUN echo '#!/bin/sh\n\
+cat > /etc/nginx/conf.d/default.conf << EOF\n\
+server {\n\
+    listen $PORT;\n\
+    server_name _;\n\
+    root /usr/share/nginx/html;\n\
+    index index.html;\n\
+    location / {\n\
+        try_files $uri $uri/ /index.html;\n\
+    }\n\
+}\n\
+EOF\n\
+\n\
+exec nginx -g "daemon off;"\n' > /start.sh && \
+chmod +x /start.sh
 
 # Set environment variable with a default value
 ENV PORT=8080
 
-# Start Nginx
-CMD /bin/sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" 
+# Start Nginx using our script
+CMD ["/start.sh"] 

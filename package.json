@@ -6,11 +6,14 @@
     "frontend"
   ],
   "scripts": {
-    "start": "cd frontend && npm start",
+    "start": "serve -s frontend/dist -l $PORT",
     "build": "cd frontend && npm run build",
-    "heroku-postbuild": "cd frontend && npm install && npm run build"
+    "heroku-postbuild": "cd frontend && npm install && npm run build && npm install -g serve"
   },
   "engines": {
     "node": "18.x"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
   }
 } 

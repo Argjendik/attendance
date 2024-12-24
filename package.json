@@ -2,13 +2,10 @@
   "name": "attendance-app",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "frontend"
-  ],
   "scripts": {
-    "start": "serve -s frontend/dist -l $PORT",
-    "build": "cd frontend && npm run build",
-    "heroku-postbuild": "cd frontend && npm install && npm run build && npm install -g serve"
+    "start": "cd frontend/dist && npx serve -s -l $PORT",
+    "build": "cd frontend && npm install && npm run build",
+    "heroku-postbuild": "npm run build"
   },
   "engines": {
     "node": "18.x"

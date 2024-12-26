@@ -2,7 +2,8 @@
   "name": "attendance-system-api",
   "version": "1.0.0",
   "engines": {
-    "node": "18.x"
+    "node": "18.x",
+    "npm": "10.x"
   },
   "scripts": {
     "build": "nest build",
@@ -11,6 +12,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "postinstall": "prisma generate && npm run build",
     "prisma:generate": "prisma generate",
     "test": "jest --passWithNoTests"
   },
@@ -27,16 +29,16 @@
     "dayjs": "^1.11.9",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "@nestjs/cli": "^10.0.0",
+    "prisma": "^5.0.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.3.1",
     "jest": "^29.5.0",
-    "prisma": "^5.0.0",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.3"

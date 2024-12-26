@@ -24,7 +24,7 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
-          heroku addons:create heroku-postgresql:mini -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku addons:create heroku-postgresql:mini -a ${{ secrets.HEROKU_APP_NAME }} || true
           DB_URL=$(heroku config:get DATABASE_URL -a ${{ secrets.HEROKU_APP_NAME }})
           echo "Database URL: $DB_URL"
 
@@ -37,6 +37,7 @@ jobs:
             DATABASE_URL=$(heroku config:get DATABASE_URL -a ${{ secrets.HEROKU_APP_NAME }}) \
             JWT_SECRET=${{ secrets.JWT_SECRET }} \
             NODE_ENV=production \
+            NPM_CONFIG_PRODUCTION=false \
             PORT=80 \
             HOST=0.0.0.0 \
             CORS_ORIGIN=${{ secrets.FRONTEND_URL }} \
@@ -48,9 +49,10 @@ jobs:
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         working-directory: ./backend
         run: |
-          heroku container:login
           git init
           git add .
           git commit -m "Deploy to Heroku"
           heroku git:remote -a ${{ secrets.HEROKU_APP_NAME }}
+          heroku buildpacks:clear -a ${{ secrets.HEROKU_APP_NAME }} || true
+          heroku buildpacks:set heroku/nodejs -a ${{ secrets.HEROKU_APP_NAME }}
           git push heroku HEAD:main --force 

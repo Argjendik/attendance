@@ -1,2 +1,2 @@
-release: npx prisma migrate deploy && npx prisma generate
+release: npm install prisma --save-dev && npx prisma migrate deploy && npx prisma generate
 web: npm run start:prod

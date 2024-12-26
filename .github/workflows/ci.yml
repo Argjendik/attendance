@@ -38,7 +38,7 @@ jobs:
       working-directory: ./backend
       run: |
         echo "Cleaning backend..."
-        sudo rimraf dist node_modules package-lock.json
+        rimraf dist node_modules package-lock.json
 
     - name: Backend - Install
       working-directory: ./backend
@@ -58,7 +58,7 @@ jobs:
       working-directory: ./frontend
       run: |
         echo "Cleaning frontend..."
-        sudo rimraf dist node_modules package-lock.json
+        rimraf dist node_modules package-lock.json
 
     - name: Frontend - Install
       working-directory: ./frontend

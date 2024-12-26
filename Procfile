@@ -1,2 +1,2 @@
 release: cd backend && chmod +x ./node_modules/.bin/prisma && npx prisma migrate deploy
-web: NODE_ENV=production npm start 
+web: cd backend && NODE_ENV=production node dist/main.js 

@@ -5,8 +5,7 @@
     "node": "18.x"
   },
   "scripts": {
-    "prebuild": "npx rimraf dist",
-    "build": "nest build",
+    "build": "rimraf dist && nest build",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

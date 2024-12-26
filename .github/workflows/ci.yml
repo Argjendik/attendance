@@ -19,32 +19,40 @@ jobs:
       with:
         node-version: '18.x'
 
-    - name: Install Backend Dependencies
+    - name: Install Global Dependencies
+      run: |
+        sudo npm install -g @nestjs/cli
+        sudo npm install -g rimraf
+
+    - name: Install and Build Backend
       working-directory: ./backend
       run: |
+        rm -rf node_modules dist
         npm install
-        npx prisma generate
-
-    - name: Build Backend
-      working-directory: ./backend
+        npm run prisma:generate
+        npm run build
       env:
         NODE_ENV: production
-      run: npm run build
+        CI: true
 
-    - name: Install Frontend Dependencies
+    - name: Install and Build Frontend
       working-directory: ./frontend
-      run: npm install
-
-    - name: Build Frontend
-      working-directory: ./frontend
+      run: |
+        rm -rf node_modules dist
+        npm install
+        npm run build
       env:
         NODE_ENV: production
-      run: npm run build
+        CI: true
 
     - name: Run Backend Tests
       working-directory: ./backend
       run: npm test || true
+      env:
+        CI: true
 
     - name: Run Frontend Tests
       working-directory: ./frontend
-      run: npm test || true 
+      run: npm test || true
+      env:
+        CI: true 

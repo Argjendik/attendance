@@ -7,8 +7,6 @@
     "npm": "10.x"
   },
   "scripts": {
-    "build": "cd backend && npm install && NODE_ENV=production npm run build:prod",
     "start": "cd backend && NODE_ENV=production node dist/main.js"
-  },
-  "cacheDirectories": ["backend/node_modules"]
+  }
 } 

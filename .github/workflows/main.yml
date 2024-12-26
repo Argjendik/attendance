@@ -18,16 +18,16 @@ jobs:
       with:
         node-version: '18.x'
         cache: 'npm'
-        cache-dependency-path: |
-          package-lock.json
-          backend/package-lock.json
+        cache-dependency-path: backend/package-lock.json
 
     - name: Install Dependencies
-      run: |
-        npm install
-        cd backend && npm install
+      working-directory: backend
+      run: npm install
         
     - name: Build
-      run: npm run build
+      working-directory: backend
+      run: |
+        npm run prisma:generate
+        npm run build
       env:
         NODE_ENV: production 

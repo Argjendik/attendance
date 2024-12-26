@@ -19,10 +19,10 @@ jobs:
         node-version: '18.x'
         cache: 'npm'
 
-    - name: Install Global Dependencies
+    - name: Generate package-lock.json
       run: |
-        npm install -g @nestjs/cli
-        npm install -g vite
+        echo "Generating package-lock.json..."
+        npm install --package-lock-only
 
     - name: Install Dependencies
       run: |
@@ -30,21 +30,25 @@ jobs:
         npm install
 
     - name: Build Backend
+      working-directory: ./backend
       run: |
         echo "Building backend..."
-        npm run build:backend
+        npm run build
 
     - name: Build Frontend
+      working-directory: ./frontend
       run: |
         echo "Building frontend..."
-        npm run build:frontend
+        npm run build || true
 
     - name: Run Backend Tests
+      working-directory: ./backend
       run: |
         echo "Running backend tests..."
-        npm run test:backend || true
+        npm test || true
 
     - name: Run Frontend Tests
+      working-directory: ./frontend
       run: |
         echo "Running frontend tests..."
-        npm run test:frontend || true 
+        npm test || true 

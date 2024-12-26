@@ -13,14 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # Backend setup
-    - name: Setup Node.js for Backend
+    - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
         cache: 'npm'
-        cache-dependency-path: backend/package-lock.json
+        cache-dependency-path: '**/package-lock.json'
 
+    # Backend
     - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
@@ -34,14 +34,7 @@ jobs:
         echo "Building backend..."
         npm run build
 
-    # Frontend setup
-    - name: Setup Node.js for Frontend
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-        cache-dependency-path: frontend/package-lock.json
-
+    # Frontend
     - name: Install Frontend Dependencies
       working-directory: ./frontend
       run: |

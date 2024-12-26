@@ -19,20 +19,28 @@ jobs:
       with:
         node-version: '18.x'
 
-    - name: Set Permissions
+    - name: Debug Environment
       run: |
-        sudo chown -R $USER:$USER .
-        sudo chmod -R 755 .
+        pwd
+        ls -la
+        whoami
+        npm --version
+        node --version
 
     - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
-        npm install
+        echo "Installing backend dependencies..."
+        npm install --verbose
+        echo "Generating Prisma client..."
         npm run prisma:generate
 
-    - name: Build Backend
+    - name: Clean and Build Backend
       working-directory: ./backend
       run: |
+        echo "Cleaning dist directory..."
+        npm run clean
+        echo "Building backend..."
         npm run build
       env:
         NODE_ENV: production
@@ -41,11 +49,13 @@ jobs:
     - name: Install Frontend Dependencies
       working-directory: ./frontend
       run: |
-        npm install
+        echo "Installing frontend dependencies..."
+        npm install --verbose
 
     - name: Build Frontend
       working-directory: ./frontend
       run: |
+        echo "Building frontend..."
         npm run build
       env:
         NODE_ENV: production
@@ -53,12 +63,16 @@ jobs:
 
     - name: Run Backend Tests
       working-directory: ./backend
-      run: npm test || true
+      run: |
+        echo "Running backend tests..."
+        npm test || true
       env:
         CI: true
 
     - name: Run Frontend Tests
       working-directory: ./frontend
-      run: npm test || true
+      run: |
+        echo "Running frontend tests..."
+        npm test || true
       env:
         CI: true 

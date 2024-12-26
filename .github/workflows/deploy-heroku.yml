@@ -1,0 +1,33 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install Heroku CLI
+        run: npm install -g heroku
+
+      - name: Deploy Backend to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        working-directory: ./backend
+        run: |
+          heroku container:login
+          git init
+          git add .
+          git commit -m "Deploy to Heroku"
+          heroku git:remote -a ${{ secrets.HEROKU_APP_NAME }}
+          git push heroku HEAD:main --force 

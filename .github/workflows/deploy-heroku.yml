@@ -18,6 +18,10 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Install dependencies
+        working-directory: ./backend
+        run: npm install
+
       - name: Install Heroku CLI
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
@@ -26,7 +30,17 @@ jobs:
       - name: Login to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: heroku container:login
+        run: heroku login -i
+
+      - name: Set up Heroku app
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: attendance-argjend
+        run: |
+          cd backend
+          heroku git:remote -a $HEROKU_APP_NAME
+          heroku buildpacks:clear || true
+          heroku buildpacks:set heroku/nodejs
 
       - name: Deploy to Heroku
         env:

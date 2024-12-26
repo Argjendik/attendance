@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "18.x"
+    "node": "18.x",
+    "npm": "10.x"
   },
   "scripts": {
+    "start": "cd backend && npm start",
     "heroku-postbuild": "cd backend && npm ci && npm run build"
-  }
+  },
+  "cacheDirectories": ["backend/node_modules"]
 } 

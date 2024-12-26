@@ -23,32 +23,20 @@ jobs:
         sudo npm install -g @nestjs/cli
         sudo npm install -g vite
 
-    - name: Install Backend Dependencies
+    - name: Setup Backend
       working-directory: ./backend
       run: |
         npm install
-
-    - name: Install Frontend Dependencies
-      working-directory: ./frontend
-      run: |
-        npm install
-
-    - name: Build Backend
-      working-directory: ./backend
-      run: |
+        npm run prisma:generate
         npm run build
 
-    - name: Build Frontend
+    - name: Setup Frontend
       working-directory: ./frontend
       run: |
+        npm install
         npm run build || true
 
-    - name: Run Backend Tests
-      working-directory: ./backend
+    - name: Run Tests
       run: |
-        npm test || true
-
-    - name: Run Frontend Tests
-      working-directory: ./frontend
-      run: |
-        npm test || true 
+        cd backend && npm test || true
+        cd ../frontend && npm test || true 

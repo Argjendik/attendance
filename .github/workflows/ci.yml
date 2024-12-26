@@ -20,17 +20,35 @@ jobs:
 
     - name: Install Global Dependencies
       run: |
-        npm install -g @nestjs/cli
-        npm install -g vite
+        sudo npm install -g @nestjs/cli
+        sudo npm install -g vite
 
-    - name: Install Dependencies
+    - name: Install Backend Dependencies
+      working-directory: ./backend
       run: |
-        npm install --workspaces
+        npm install
 
-    - name: Build Projects
+    - name: Install Frontend Dependencies
+      working-directory: ./frontend
       run: |
-        npm run build --workspaces || true
+        npm install
 
-    - name: Run Tests
+    - name: Build Backend
+      working-directory: ./backend
       run: |
-        npm run test --workspaces || true 
+        npm run build
+
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
+        npm run build || true
+
+    - name: Run Backend Tests
+      working-directory: ./backend
+      run: |
+        npm test || true
+
+    - name: Run Frontend Tests
+      working-directory: ./frontend
+      run: |
+        npm test || true 

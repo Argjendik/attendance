@@ -5,7 +5,7 @@
     "node": "18.x"
   },
   "scripts": {
-    "clean": "node -e \"require('fs').rmSync('./dist', { recursive: true, force: true });\"",
+    "clean": "node -e \"try { require('fs').rmSync('./dist', { recursive: true, force: true }); console.log('Successfully cleaned dist directory'); } catch (err) { console.error('Error cleaning dist:', err.message); if (!err.message.includes('no such file')) process.exit(1); }\"",
     "prebuild": "npm run clean",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\"",

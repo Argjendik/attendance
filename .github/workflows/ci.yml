@@ -27,11 +27,19 @@ jobs:
         npm --version
         node --version
 
+    - name: Clear npm cache
+      run: |
+        echo "Clearing npm cache..."
+        npm cache clean --force
+        echo "Cache cleared successfully"
+
     - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
+        echo "Removing old node_modules..."
+        rm -rf node_modules
         echo "Installing backend dependencies..."
-        npm install --verbose
+        npm install --no-audit --verbose
         echo "Generating Prisma client..."
         npm run prisma:generate
 
@@ -39,26 +47,26 @@ jobs:
       working-directory: ./backend
       run: |
         echo "Cleaning dist directory..."
-        npm run clean
+        NODE_ENV=production npm run clean
         echo "Building backend..."
-        npm run build
+        NODE_ENV=production npm run build
       env:
-        NODE_ENV: production
         CI: true
 
     - name: Install Frontend Dependencies
       working-directory: ./frontend
       run: |
+        echo "Removing old node_modules..."
+        rm -rf node_modules
         echo "Installing frontend dependencies..."
-        npm install --verbose
+        npm install --no-audit --verbose
 
     - name: Build Frontend
       working-directory: ./frontend
       run: |
         echo "Building frontend..."
-        npm run build
+        NODE_ENV=production npm run build
       env:
-        NODE_ENV: production
         CI: true
 
     - name: Run Backend Tests

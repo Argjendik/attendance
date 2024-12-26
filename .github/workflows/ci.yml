@@ -17,15 +17,13 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-        cache: 'npm'
-        cache-dependency-path: '**/package-lock.json'
 
     # Backend
     - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
         echo "Installing backend dependencies..."
-        npm ci
+        npm install
         npm install -g @nestjs/cli
 
     - name: Build Backend
@@ -39,7 +37,7 @@ jobs:
       working-directory: ./frontend
       run: |
         echo "Installing frontend dependencies..."
-        npm ci
+        npm install
         npm install -g vite
 
     - name: Build Frontend

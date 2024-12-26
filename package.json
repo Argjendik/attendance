@@ -7,8 +7,8 @@
     "npm": "10.x"
   },
   "scripts": {
-    "start": "cd backend && npm start",
-    "heroku-postbuild": "cd backend && npm ci && npm run build"
+    "heroku-postbuild": "cd backend && npm ci && npm run build",
+    "start": "cd backend && npm run start:prod"
   },
   "cacheDirectories": ["backend/node_modules"]
 } 

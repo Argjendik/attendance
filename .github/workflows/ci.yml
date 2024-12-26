@@ -19,20 +19,36 @@ jobs:
       with:
         node-version: '18.x'
 
-    - name: Install and Build Backend
+    - name: Clean Backend
+      working-directory: ./backend
+      run: rm -rf dist node_modules
+
+    - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
         echo "Installing backend dependencies..."
-        npm ci
+        npm install
         echo "Generating Prisma client..."
         npx prisma generate
-        echo "Building backend..."
-        npm run build
 
-    - name: Install and Build Frontend
+    - name: Build Backend
+      working-directory: ./backend
+      run: |
+        echo "Building backend..."
+        npx nest build
+
+    - name: Clean Frontend
+      working-directory: ./frontend
+      run: rm -rf dist node_modules
+
+    - name: Install Frontend Dependencies
       working-directory: ./frontend
       run: |
         echo "Installing frontend dependencies..."
-        npm ci
+        npm install
+
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
         echo "Building frontend..."
         npm run build 

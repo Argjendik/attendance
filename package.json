@@ -7,7 +7,7 @@
     "npm": "10.x"
   },
   "scripts": {
-    "heroku-postbuild": "cd backend && npm install && npm install prisma --save-dev && npx prisma generate && npm run build",
+    "heroku-postbuild": "cd backend && npm install --include=dev && npm run build",
     "start": "cd backend && npm run start:prod"
   },
   "cacheDirectories": ["backend/node_modules"]

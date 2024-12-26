@@ -26,18 +26,27 @@ jobs:
         npm install -g @nestjs/cli
         npm install -g vite
 
-    - name: Setup Backend
+    - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
+        rm -rf node_modules dist
         npm install
-        npm run clean || true
+
+    - name: Build Backend
+      working-directory: ./backend
+      run: |
         npm run prisma:generate
         npm run build
 
-    - name: Setup Frontend
+    - name: Install Frontend Dependencies
       working-directory: ./frontend
       run: |
+        rm -rf node_modules dist
         npm install
+
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
         npm run build
 
     - name: Run Tests

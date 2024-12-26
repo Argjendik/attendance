@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout code
@@ -19,27 +19,33 @@ jobs:
       with:
         node-version: '18.x'
 
-    - name: Install Global Dependencies
+    - name: Set Permissions
       run: |
-        sudo npm install -g @nestjs/cli
-        sudo npm install -g rimraf
+        sudo chown -R $USER:$USER .
+        sudo chmod -R 755 .
 
-    - name: Install and Build Backend
+    - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
-        rm -rf node_modules dist
         npm install
         npm run prisma:generate
+
+    - name: Build Backend
+      working-directory: ./backend
+      run: |
         npm run build
       env:
         NODE_ENV: production
         CI: true
 
-    - name: Install and Build Frontend
+    - name: Install Frontend Dependencies
       working-directory: ./frontend
       run: |
-        rm -rf node_modules dist
         npm install
+
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
         npm run build
       env:
         NODE_ENV: production

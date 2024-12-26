@@ -42,6 +42,10 @@ jobs:
           heroku buildpacks:clear || true
           heroku buildpacks:set heroku/nodejs
 
+      - name: Generate Prisma Client
+        working-directory: ./backend
+        run: npx prisma generate
+
       - name: Deploy to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}

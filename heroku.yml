@@ -1,5 +1,0 @@
-build:
-  docker:
-    web: frontend/Dockerfile
-run:
-  web: /docker-entrypoint.sh 

@@ -19,15 +19,22 @@ jobs:
       - name: Install Heroku CLI
         run: npm install -g heroku
 
+      - name: Setup Heroku Postgres
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: |
+          heroku addons:create heroku-postgresql:mini -a ${{ secrets.HEROKU_APP_NAME }}
+          DB_URL=$(heroku config:get DATABASE_URL -a ${{ secrets.HEROKU_APP_NAME }})
+          echo "Database URL: $DB_URL"
+
       - name: Setup Heroku Config
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
           heroku config:set \
-            DB_USER=${{ secrets.DB_USER }} \
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-            DB_NAME=${{ secrets.DB_NAME }} \
+            DATABASE_URL=$(heroku config:get DATABASE_URL -a ${{ secrets.HEROKU_APP_NAME }}) \
             JWT_SECRET=${{ secrets.JWT_SECRET }} \
             NODE_ENV=production \
             PORT=80 \

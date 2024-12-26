@@ -12,7 +12,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "prisma:generate": "prisma generate",
-    "test": "jest"
+    "test": "jest",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

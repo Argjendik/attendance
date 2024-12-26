@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
 
     steps:
     - uses: actions/checkout@v3
@@ -23,22 +26,11 @@ jobs:
         npm install -g @nestjs/cli
         npm install -g vite
 
-    - name: Clean Backend
-      working-directory: ./backend
-      run: |
-        rm -rf dist || true
-        rm -rf node_modules || true
-
-    - name: Clean Frontend
-      working-directory: ./frontend
-      run: |
-        rm -rf dist || true
-        rm -rf node_modules || true
-
     - name: Setup Backend
       working-directory: ./backend
       run: |
         npm install
+        npm run clean || true
         npm run prisma:generate
         npm run build
 
@@ -46,7 +38,7 @@ jobs:
       working-directory: ./frontend
       run: |
         npm install
-        npm run build || true
+        npm run build
 
     - name: Run Tests
       run: |

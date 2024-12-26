@@ -28,7 +28,8 @@ jobs:
       working-directory: ./backend
       run: |
         echo "Cleaning backend..."
-        rimraf dist node_modules package-lock.json
+        chmod +x ./node_modules/.bin/rimraf
+        ./node_modules/.bin/rimraf dist node_modules package-lock.json
 
     - name: Backend - Install
       working-directory: ./backend
@@ -48,7 +49,8 @@ jobs:
       working-directory: ./frontend
       run: |
         echo "Cleaning frontend..."
-        rimraf dist node_modules package-lock.json
+        chmod +x ./node_modules/.bin/rimraf
+        ./node_modules/.bin/rimraf dist node_modules package-lock.json
 
     - name: Frontend - Install
       working-directory: ./frontend
@@ -60,4 +62,4 @@ jobs:
       working-directory: ./frontend
       run: |
         echo "Building frontend..."
-        npm run build 
+        npm run build

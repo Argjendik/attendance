@@ -1,4 +1,4 @@
-name: CI
+name: Build and Test
 
 on:
   push:
@@ -9,46 +9,42 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-        cache: 'npm'
-
-    - name: Install Global Dependencies
-      run: |
-        sudo npm install -g @nestjs/cli
-        sudo npm install -g vite
 
     - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
         npm install
-        npm run prisma:generate
+        npx prisma generate
 
     - name: Build Backend
       working-directory: ./backend
-      run: |
-        NODE_ENV=production npm run build
+      env:
+        NODE_ENV: production
+      run: npm run build
 
     - name: Install Frontend Dependencies
       working-directory: ./frontend
-      run: |
-        npm install
+      run: npm install
 
     - name: Build Frontend
       working-directory: ./frontend
-      run: |
-        NODE_ENV=production npm run build
+      env:
+        NODE_ENV: production
+      run: npm run build
 
-    - name: Run Tests
-      run: |
-        cd backend && npm test || true
-        cd ../frontend && npm test || true 
+    - name: Run Backend Tests
+      working-directory: ./backend
+      run: npm test || true
+
+    - name: Run Frontend Tests
+      working-directory: ./frontend
+      run: npm test || true 

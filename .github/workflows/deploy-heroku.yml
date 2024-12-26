@@ -18,12 +18,15 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
       - name: Install dependencies
         working-directory: ./backend
         run: |
           npm ci
           npm install -g @nestjs/cli
-          npm install -g rimraf
 
       - name: Generate Prisma Client
         working-directory: ./backend

@@ -1,2 +1,2 @@
-release: cd backend && npx prisma migrate deploy
+release: cd backend && chmod +x ./node_modules/.bin/prisma && npx prisma migrate deploy
 web: npm start 

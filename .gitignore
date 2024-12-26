@@ -1,4 +1,46 @@
+# Dependencies
 node_modules/
-dist/
+/.pnp
+.pnp.js
+
+# Production build files
+/backend/dist/
+/frontend/build/
+/frontend/dist/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+*.js.map
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
 .DS_Store
-*.log 
+Thumbs.db
+
+# Testing
+/coverage
+
+# Misc
+*.pem
+.cache/ 

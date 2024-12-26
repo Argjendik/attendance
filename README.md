@@ -1,183 +1,158 @@
-# RFID Attendance System
+# Attendance Management System
 
-A comprehensive attendance management system using RFID technology, with both web-based and desktop interfaces.
+A full-stack attendance management system with RFID integration.
 
-## Features
+## Prerequisites
 
-### Web Interface
-- **User Management**: Admin, HR, and Manager roles with different access levels
-- **Agent Management**: Add, edit, and delete agents with RFID card assignments
-- **Office Management**: Configure multiple offices with custom check-in/out times
-- **Attendance History**: View and export detailed attendance records
-- **Manual Entry**: HR can manually record attendance when needed
-- **Real-time Updates**: Live status updates for check-ins and check-outs
-- **Working Hours Calculation**: Automatic calculation of working hours
-- **Status Tracking**: ON_TIME, LATE, and EARLY status indicators
+- Node.js (v16 or higher)
+- PostgreSQL
+- RFID Reader (SYC ID&IC compatible)
 
-### Desktop RFID Client
-- **Real-time RFID Scanning**: Instant card detection and processing
-- **Offline Mode**: Continues working during server disconnections
-- **Auto-sync**: Automatically syncs offline records when connection is restored
-- **System Tray Integration**: Minimizes to system tray for background operation
-- **Visual Notifications**: Clear status indicators for scan results
-- **Cooldown Protection**: Prevents accidental double scans
-- **Error Recovery**: Automatic reconnection and error handling
+## Project Structure
 
-## System Requirements
-
-### Server (Backend)
-- Node.js 14+
-- PostgreSQL 12+
-- NestJS Framework
-- Prisma ORM
-
-### Web Client (Frontend)
-- React 18+
-- Material-UI
-- TypeScript
-- Modern web browser
-
-### Desktop Client
-- Python 3.8+
-- Windows 10/11
-- Required Python packages:
-  - hidapi==0.14.0
-  - requests==2.31.0
-  - Pillow==10.0.0
-  - pystray==0.19.4
-  - plyer==2.1.0
-  - pynput==1.7.6
+```
+.
+├── backend/         # NestJS backend
+├── frontend/        # React frontend
+└── components/      # Shared components
+```
 
 ## Installation
 
-### Backend Setup
-1. Clone the repository
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd attendance
+```
+
 2. Install dependencies:
-   ```bash
-   cd backend
-   npm install
-   ```
-3. Configure environment variables in `.env`:
-   ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/attendance"
-   JWT_SECRET="your-secret-key"
-   ```
-4. Run database migrations:
-   ```bash
-   npx prisma migrate dev
-   ```
-5. Start the server:
-   ```bash
-   npm run start:dev
-   ```
+```bash
+# Install backend dependencies
+cd backend
+npm install
 
-### Frontend Setup
-1. Navigate to frontend directory:
-   ```bash
-   cd frontend
-   npm install
-   ```
-2. Configure API endpoint in `.env`:
-   ```env
-   REACT_APP_API_URL=http://localhost:3001
-   ```
-3. Start the development server:
-   ```bash
-   npm start
-   ```
+# Install frontend dependencies
+cd ../frontend
+npm install
+```
 
-### Desktop Client Setup
-1. Navigate to RFID client directory:
-   ```bash
-   cd r
-   ```
-2. Install required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Configure `config.json` with your server settings
-4. Run the client:
-   ```bash
-   python rfid_client.py
-   ```
+3. Environment Setup:
+- Copy `.env.example` to `.env` in both frontend and backend directories
+- Update the environment variables with your configuration
 
-## Creating Installer
+## Environment Variables
 
-To create a Windows installer:
+The following environment variables are required:
 
-1. Install cx_Freeze:
-   ```bash
-   pip install cx_Freeze
-   ```
-2. Run the setup script:
-   ```bash
-   python setup.py bdist_msi
-   ```
-3. Find the installer in the `dist` directory
+```
+# Database Configuration
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=attendance_db
 
-## Usage
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key
 
-### Web Interface
-1. Access the web interface at `http://localhost:3000`
-2. Log in with your credentials
-3. Use the navigation menu to access different features
-4. For HR:
-   - Add/edit agents and assign RFID cards
-   - View attendance records
-   - Make manual entries when needed
+# API Configuration
+PORT=3001
+HOST=localhost
+```
 
-### Desktop Client
-1. Start the RFID client application
-2. The application will minimize to system tray
-3. Scan RFID cards to record attendance
-4. Check the logs for scan results
-5. Right-click the tray icon for additional options
+## Database Setup
+
+1. Create a PostgreSQL database:
+```sql
+CREATE DATABASE attendance_db;
+```
+
+2. Run migrations:
+```bash
+cd backend
+npm run migrate:dev
+```
+
+3. (Optional) Seed the database:
+```bash
+npm run seed
+```
+
+## Development
+
+1. Start the backend server:
+```bash
+cd backend
+npm run start:dev
+```
+
+2. Start the frontend development server:
+```bash
+cd frontend
+npm run dev
+```
+
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
+
+## Production Build
+
+1. Build the backend:
+```bash
+cd backend
+npm run build
+```
+
+2. Build the frontend:
+```bash
+cd frontend
+npm run build
+```
+
+## Security Considerations
+
+- All sensitive information should be stored in environment variables
+- JWT secrets should be strong and unique per environment
+- Database passwords should be complex and regularly updated
+- CORS is configured to restrict access to known origins
+
+## Deployment
+
+1. Set up environment variables on your hosting platform
+2. Build both frontend and backend applications
+3. Deploy the backend API first
+4. Update the frontend API URL environment variable
+5. Deploy the frontend application
+
+## RFID Reader Setup
+
+1. Connect the RFID reader to your system
+2. Update the `config.json` with your device's specifications:
+   - vendor_id
+   - product_id
+   - device_name
 
 ## Troubleshooting
 
-### Common Issues
-1. **RFID Reader Not Detected**
-   - Check USB connection
-   - Verify correct vendor_id and product_id in config.json
-   - Ensure proper drivers are installed
+Common issues and their solutions:
 
-2. **Server Connection Issues**
-   - Verify server URL in config.json
-   - Check network connectivity
-   - Ensure server is running
+1. Database Connection Issues:
+   - Verify PostgreSQL is running
+   - Check database credentials in .env
+   - Ensure database exists
 
-3. **Card Not Recognized**
-   - Verify card is registered in the system
-   - Check card format settings
-   - Try rescanning the card
+2. RFID Reader Not Detected:
+   - Verify USB connection
+   - Check device permissions
+   - Confirm vendor and product IDs
 
-### Error Recovery
-- The system automatically stores offline scans
-- Records will sync when connection is restored
-- Check logs for detailed error messages
+## Contributing
 
-## Security
-
-- All API endpoints are protected with JWT authentication
-- Role-based access control for different user types
-- Secure password hashing
-- RFID card data encryption
-- Session management and timeout
-
-## Support
-
-For support and bug reports, please create an issue in the repository or contact the system administrator.
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Deployment URLs
-
-### Staging Environment
-- Frontend: https://staging-frontend-arjan-dc3f2797bf0a.herokuapp.com/
-- Backend: https://staging-backend-fda18e3a12e2.herokuapp.com/
-
-### Production Environment
-- Frontend: https://prod-frontend-arjan-d6eb11acebc5.herokuapp.com/
-- Backend: https://prod-backend-arjan-ef5e8a8857c6.herokuapp.com/
+[Add your license here]

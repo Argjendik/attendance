@@ -21,15 +21,15 @@ jobs:
 
     - name: Install Global Dependencies
       run: |
-        npm install -g rimraf
-        npm install -g @nestjs/cli
+        sudo npm install -g rimraf
+        sudo npm install -g @nestjs/cli
+        which rimraf
 
     - name: Backend - Clean
       working-directory: ./backend
       run: |
         echo "Cleaning backend..."
-        chmod +x ./node_modules/.bin/rimraf
-        ./node_modules/.bin/rimraf dist node_modules package-lock.json
+        sudo rimraf dist node_modules package-lock.json
 
     - name: Backend - Install
       working-directory: ./backend
@@ -49,8 +49,7 @@ jobs:
       working-directory: ./frontend
       run: |
         echo "Cleaning frontend..."
-        chmod +x ./node_modules/.bin/rimraf
-        ./node_modules/.bin/rimraf dist node_modules package-lock.json
+        sudo rimraf dist node_modules package-lock.json
 
     - name: Frontend - Install
       working-directory: ./frontend

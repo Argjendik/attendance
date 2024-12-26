@@ -8,5 +8,6 @@ export default defineConfig({
   },
   define: {
     'import.meta.env': JSON.stringify(process.env)
-  }
+  },
+  base: '/attendance/'
 }); 

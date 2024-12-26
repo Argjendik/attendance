@@ -7,7 +7,7 @@
     "npm": "10.x"
   },
   "scripts": {
-    "heroku-postbuild": "cd backend && npm install --production=false && npm run build && npm prune --production",
+    "heroku-postbuild": "cd backend && npm install --production=false && chmod +x ./node_modules/.bin/nest && npm run build && npm prune --production",
     "start": "cd backend && NODE_ENV=production node dist/main.js"
   },
   "cacheDirectories": ["backend/node_modules"]

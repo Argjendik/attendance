@@ -8,15 +8,15 @@
     "npm": "10.x"
   },
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "npx rimraf dist",
     "build": "npx nest build",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "node dist/main.js",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:dev": "npx nest start --watch",
+    "start:debug": "npx nest start --debug --watch",
     "start:prod": "node dist/main.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy"
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

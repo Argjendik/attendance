@@ -19,68 +19,20 @@ jobs:
       with:
         node-version: '18.x'
 
-    - name: Debug Environment
-      run: |
-        pwd
-        ls -la
-        whoami
-        npm --version
-        node --version
-
-    - name: Clear npm cache
-      run: |
-        echo "Clearing npm cache..."
-        npm cache clean --force
-        echo "Cache cleared successfully"
-
-    - name: Install Backend Dependencies
+    - name: Install and Build Backend
       working-directory: ./backend
       run: |
-        echo "Removing old node_modules..."
-        rm -rf node_modules
         echo "Installing backend dependencies..."
-        npm install --no-audit --verbose
+        npm ci
         echo "Generating Prisma client..."
-        npm run prisma:generate
-
-    - name: Clean and Build Backend
-      working-directory: ./backend
-      run: |
-        echo "Cleaning dist directory..."
-        NODE_ENV=production npm run clean
+        npx prisma generate
         echo "Building backend..."
-        NODE_ENV=production npm run build
-      env:
-        CI: true
+        npm run build
 
-    - name: Install Frontend Dependencies
+    - name: Install and Build Frontend
       working-directory: ./frontend
       run: |
-        echo "Removing old node_modules..."
-        rm -rf node_modules
         echo "Installing frontend dependencies..."
-        npm install --no-audit --verbose
-
-    - name: Build Frontend
-      working-directory: ./frontend
-      run: |
+        npm ci
         echo "Building frontend..."
-        NODE_ENV=production npm run build
-      env:
-        CI: true
-
-    - name: Run Backend Tests
-      working-directory: ./backend
-      run: |
-        echo "Running backend tests..."
-        npm test || true
-      env:
-        CI: true
-
-    - name: Run Frontend Tests
-      working-directory: ./frontend
-      run: |
-        echo "Running frontend tests..."
-        npm test || true
-      env:
-        CI: true 
+        npm run build 

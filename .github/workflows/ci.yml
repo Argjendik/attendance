@@ -19,34 +19,42 @@ jobs:
       with:
         node-version: '18.x'
 
-    - name: Install NestJS CLI
-      run: npm install -g @nestjs/cli
+    - name: Install Global Dependencies
+      run: |
+        npm install -g rimraf
+        npm install -g @nestjs/cli
 
-    - name: Backend - Install Dependencies
+    - name: Backend - Clean
+      working-directory: ./backend
+      run: |
+        echo "Cleaning backend..."
+        rimraf dist node_modules package-lock.json
+
+    - name: Backend - Install
       working-directory: ./backend
       run: |
         echo "Installing backend dependencies..."
-        rm -rf node_modules package-lock.json dist
-        npm install --no-workspaces
-
-    - name: Backend - Generate Prisma
-      working-directory: ./backend
-      run: |
-        echo "Generating Prisma client..."
-        npx prisma generate
+        npm install
 
     - name: Backend - Build
       working-directory: ./backend
       run: |
         echo "Building backend..."
-        npx nest build
+        npm run build
+        echo "Generating Prisma client..."
+        npx prisma generate
 
-    - name: Frontend - Install Dependencies
+    - name: Frontend - Clean
+      working-directory: ./frontend
+      run: |
+        echo "Cleaning frontend..."
+        rimraf dist node_modules package-lock.json
+
+    - name: Frontend - Install
       working-directory: ./frontend
       run: |
         echo "Installing frontend dependencies..."
-        rm -rf node_modules package-lock.json dist
-        npm install --no-workspaces
+        npm install
 
     - name: Frontend - Build
       working-directory: ./frontend

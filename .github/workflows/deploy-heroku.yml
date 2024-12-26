@@ -19,6 +19,22 @@ jobs:
       - name: Install Heroku CLI
         run: npm install -g heroku
 
+      - name: Setup Heroku Config
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+        run: |
+          heroku config:set \
+            DB_USER=${{ secrets.DB_USER }} \
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            DB_NAME=${{ secrets.DB_NAME }} \
+            JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            NODE_ENV=production \
+            PORT=80 \
+            HOST=0.0.0.0 \
+            CORS_ORIGIN=${{ secrets.FRONTEND_URL }} \
+            -a ${{ secrets.HEROKU_APP_NAME }}
+
       - name: Deploy Backend to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}

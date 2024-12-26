@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - uses: actions/checkout@v3
@@ -20,12 +23,13 @@ jobs:
 
     - name: Install Global Dependencies
       run: |
-        sudo npm install -g @nestjs/cli
+        sudo npm install -g @nestjs/cli rimraf
         sudo npm install -g vite
 
     - name: Setup Backend
       working-directory: ./backend
       run: |
+        sudo chown -R $USER:$USER .
         npm install
         npm run prisma:generate
         npm run build
@@ -33,6 +37,7 @@ jobs:
     - name: Setup Frontend
       working-directory: ./frontend
       run: |
+        sudo chown -R $USER:$USER .
         npm install
         npm run build || true
 

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "prebuild": "rimraf dist && chmod +x ./node_modules/.bin/nest",
-    "build": "npx nest build",
+    "build": "prisma generate && npx nest build",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",

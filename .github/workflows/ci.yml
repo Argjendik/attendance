@@ -18,12 +18,30 @@ jobs:
       with:
         node-version: '18.x'
 
+    # Cache backend node_modules
+    - name: Cache Backend Dependencies
+      uses: actions/cache@v3
+      with:
+        path: backend/node_modules
+        key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-backend-
+
+    # Cache frontend node_modules
+    - name: Cache Frontend Dependencies
+      uses: actions/cache@v3
+      with:
+        path: frontend/node_modules
+        key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-frontend-
+
     # Backend
     - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
         echo "Installing backend dependencies..."
-        npm install
+        npm ci
         npm install -g @nestjs/cli
 
     - name: Build Backend
@@ -37,7 +55,7 @@ jobs:
       working-directory: ./frontend
       run: |
         echo "Installing frontend dependencies..."
-        npm install
+        npm ci
         npm install -g vite
 
     - name: Build Frontend

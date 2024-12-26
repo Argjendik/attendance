@@ -20,31 +20,20 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./backend
-        run: npm install
-
-      - name: Install Heroku CLI
         run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
-          heroku --version
-
-      - name: Login to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: heroku login -i
-
-      - name: Set up Heroku app
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: attendance-argjend
-        run: |
-          cd backend
-          heroku git:remote -a $HEROKU_APP_NAME
-          heroku buildpacks:clear || true
-          heroku buildpacks:set heroku/nodejs
+          npm ci
+          npm install -g @nestjs/cli
+          npm install -g rimraf
 
       - name: Generate Prisma Client
         working-directory: ./backend
-        run: npx prisma generate
+        run: |
+          npx prisma generate
+
+      - name: Build application
+        working-directory: ./backend
+        run: |
+          npm run build
 
       - name: Deploy to Heroku
         env:
@@ -57,4 +46,7 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           git commit -m "Deploy to Heroku"
-          git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git HEAD:main 
+          heroku git:remote -a $HEROKU_APP_NAME
+          heroku buildpacks:clear || true
+          heroku buildpacks:set heroku/nodejs
+          git push heroku HEAD:main --force 

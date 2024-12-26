@@ -7,7 +7,7 @@
     "npm": "10.x"
   },
   "scripts": {
-    "build": "cd backend && pwd && ls -la && npm install && node ./node_modules/prisma/build/index.js generate && node --trace-warnings ./node_modules/@nestjs/cli/bin/nest.js build --debug",
+    "build": "cd backend && pwd && ls -la && npm install && node ./node_modules/prisma/build/index.js generate && node --trace-warnings ./node_modules/@nestjs/cli/bin/nest.js build -p tsconfig.json",
     "start": "cd backend && NODE_ENV=production node dist/main.js"
   },
   "cacheDirectories": ["backend/node_modules"]

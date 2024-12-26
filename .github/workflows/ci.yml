@@ -22,20 +22,6 @@ jobs:
         node-version: '18.x'
         cache: 'npm'
 
-    - name: Cache Backend Dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          backend/node_modules
-        key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json') }}
-
-    - name: Cache Frontend Dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          frontend/node_modules
-        key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
-
     - name: Install Global Dependencies
       run: |
         sudo npm install -g @nestjs/cli
@@ -44,20 +30,18 @@ jobs:
     - name: Install Backend Dependencies
       working-directory: ./backend
       run: |
-        sudo chown -R $USER:$(id -gn $USER) .
-        npm ci || npm install
+        npm install
+        npm run prisma:generate
 
     - name: Build Backend
       working-directory: ./backend
       run: |
-        npm run prisma:generate
         NODE_ENV=production npm run build
 
     - name: Install Frontend Dependencies
       working-directory: ./frontend
       run: |
-        sudo chown -R $USER:$(id -gn $USER) .
-        npm ci || npm install
+        npm install
 
     - name: Build Frontend
       working-directory: ./frontend

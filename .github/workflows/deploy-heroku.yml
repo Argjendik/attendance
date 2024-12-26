@@ -2,57 +2,41 @@ name: Deploy to Heroku
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: '18'
+          cache: 'npm'
 
       - name: Install Heroku CLI
-        run: npm install -g heroku
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+          heroku --version
 
-      - name: Setup Heroku Postgres
+      - name: Login to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-        run: |
-          heroku addons:create heroku-postgresql:mini -a ${{ secrets.HEROKU_APP_NAME }} || true
-          DB_URL=$(heroku config:get DATABASE_URL -a ${{ secrets.HEROKU_APP_NAME }})
-          echo "Database URL: $DB_URL"
+        run: heroku container:login
 
-      - name: Setup Heroku Config
+      - name: Deploy to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          HEROKU_APP_NAME: attendance-argjend
         run: |
-          heroku config:set \
-            DATABASE_URL=$(heroku config:get DATABASE_URL -a ${{ secrets.HEROKU_APP_NAME }}) \
-            JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            NODE_ENV=production \
-            NPM_CONFIG_PRODUCTION=false \
-            PORT=80 \
-            HOST=0.0.0.0 \
-            CORS_ORIGIN=${{ secrets.FRONTEND_URL }} \
-            -a ${{ secrets.HEROKU_APP_NAME }}
-
-      - name: Deploy Backend to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-        working-directory: ./backend
-        run: |
+          cd backend
           git init
           git add .
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
           git commit -m "Deploy to Heroku"
-          heroku git:remote -a ${{ secrets.HEROKU_APP_NAME }}
-          heroku buildpacks:clear -a ${{ secrets.HEROKU_APP_NAME }} || true
-          heroku buildpacks:set heroku/nodejs -a ${{ secrets.HEROKU_APP_NAME }}
-          git push heroku HEAD:main --force 
+          git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git HEAD:main 

@@ -7,8 +7,9 @@
     "npm": "10.x"
   },
   "scripts": {
-    "build": "cd backend && npm install && chmod +x ./node_modules/.bin/nest && npm run build",
-    "start": "cd backend && NODE_ENV=production node dist/main.js"
+    "build": "cd backend && npm install && npx prisma generate && npx nest build",
+    "start": "cd backend && NODE_ENV=production node dist/main.js",
+    "heroku-postbuild": "cd backend && npm install && npx prisma generate && npx nest build"
   },
   "cacheDirectories": ["backend/node_modules"]
 } 

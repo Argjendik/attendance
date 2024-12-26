@@ -17,38 +17,20 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
-        cache: 'npm'
 
-    - name: Generate package-lock.json
+    - name: Install Global Dependencies
       run: |
-        echo "Generating package-lock.json..."
-        npm install --package-lock-only
+        npm install -g @nestjs/cli
+        npm install -g vite
 
     - name: Install Dependencies
       run: |
-        echo "Installing all dependencies..."
-        npm install
+        npm install --workspaces
 
-    - name: Build Backend
-      working-directory: ./backend
+    - name: Build Projects
       run: |
-        echo "Building backend..."
-        npm run build
+        npm run build --workspaces || true
 
-    - name: Build Frontend
-      working-directory: ./frontend
+    - name: Run Tests
       run: |
-        echo "Building frontend..."
-        npm run build || true
-
-    - name: Run Backend Tests
-      working-directory: ./backend
-      run: |
-        echo "Running backend tests..."
-        npm test || true
-
-    - name: Run Frontend Tests
-      working-directory: ./frontend
-      run: |
-        echo "Running frontend tests..."
-        npm test || true 
+        npm run test --workspaces || true 

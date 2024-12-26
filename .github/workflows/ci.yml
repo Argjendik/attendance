@@ -17,44 +17,34 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '18.x'
+        cache: 'npm'
 
-    # Backend
-    - name: Install Backend Dependencies
-      working-directory: ./backend
+    - name: Install Global Dependencies
       run: |
-        echo "Installing backend dependencies..."
-        npm install
         npm install -g @nestjs/cli
-
-    - name: Build Backend
-      working-directory: ./backend
-      run: |
-        echo "Building backend..."
-        npm run build
-
-    # Frontend
-    - name: Install Frontend Dependencies
-      working-directory: ./frontend
-      run: |
-        echo "Installing frontend dependencies..."
-        npm install
         npm install -g vite
 
+    - name: Install Dependencies
+      run: |
+        echo "Installing all dependencies..."
+        npm install
+
+    - name: Build Backend
+      run: |
+        echo "Building backend..."
+        npm run build:backend
+
     - name: Build Frontend
-      working-directory: ./frontend
       run: |
         echo "Building frontend..."
-        npm run build || true
+        npm run build:frontend
 
-    # Tests
     - name: Run Backend Tests
-      working-directory: ./backend
       run: |
         echo "Running backend tests..."
-        npm test || true
+        npm run test:backend || true
 
     - name: Run Frontend Tests
-      working-directory: ./frontend
       run: |
         echo "Running frontend tests..."
-        npm test || true 
+        npm run test:frontend || true 

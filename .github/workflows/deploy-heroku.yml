@@ -87,27 +87,29 @@ jobs:
           git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git || true
           heroku buildpacks:clear --app $HEROKU_APP_NAME || true
           heroku buildpacks:set heroku/nodejs --app $HEROKU_APP_NAME
+          
+          # Set environment variables first
+          heroku config:set DATABASE_URL="${{ secrets.DATABASE_URL }}" --app $HEROKU_APP_NAME
+          heroku config:set JWT_SECRET="${{ secrets.JWT_SECRET }}" --app $HEROKU_APP_NAME
           heroku config:set NPM_CONFIG_PRODUCTION=false --app $HEROKU_APP_NAME
           heroku config:set NODE_ENV=production --app $HEROKU_APP_NAME
           
-          # Add Prisma and other necessary environment variables
-          heroku config:set DATABASE_URL=${{ secrets.DATABASE_URL }} --app $HEROKU_APP_NAME
-          heroku config:set JWT_SECRET=${{ secrets.JWT_SECRET }} --app $HEROKU_APP_NAME
-          
-          # Add post-build commands for Prisma
-          echo "
-          {
-            \"scripts\": {
-              \"postinstall\": \"prisma generate && npm run build\",
-              \"build\": \"nest build\",
-              \"start\": \"node dist/main.js\"
+          # Create a clean package.json for production
+          echo '{
+            "engines": {
+              "node": "18.x"
+            },
+            "scripts": {
+              "postinstall": "prisma generate",
+              "build": "node node_modules/@nestjs/cli/bin/nest.js build",
+              "start": "node dist/main.js"
             }
-          }" > package.json.tmp
+          }' > package.json.tmp
           jq -s '.[0] * .[1]' package.json package.json.tmp > package.json.new
           mv package.json.new package.json
           rm package.json.tmp
 
           git add .
-          git commit -m "Update package.json with Prisma setup"
+          git commit -m "Update package.json for production"
           
           git push heroku HEAD:main --force 

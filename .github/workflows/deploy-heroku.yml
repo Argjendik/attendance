@@ -25,14 +25,16 @@ jobs:
       - name: Install and build frontend
         run: |
           cd frontend
-          npm install
-          npm run build
+          npm ci
+          npm install -D vite
+          npm install -D @vitejs/plugin-react
+          NODE_ENV=production ./node_modules/.bin/vite build
           cd ..
 
       - name: Install and build backend
         working-directory: ./backend
         run: |
-          npm install
+          npm ci
           npm run build
           mkdir -p dist/public
           cp -r ../frontend/dist/* dist/public/

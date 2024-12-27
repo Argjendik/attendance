@@ -22,30 +22,31 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Install and build frontend
+      - name: Build and prepare for deployment
         run: |
+          # Build frontend
           cd frontend
-          rm -rf node_modules package-lock.json
           npm install
           npm install -D @rollup/rollup-linux-x64-gnu
           npm install -D vite @vitejs/plugin-react
           npm run build
           cd ..
 
-      - name: Prepare backend for deployment
-        working-directory: ./backend
-        run: |
-          # Create production package.json
-          jq '. + {"scripts":{"start":"node dist/main.js","build":"nest build"}} + {"engines":{"node":"18.x"}}' package.json > package.json.new
-          mv package.json.new package.json
-          
-          # Install dependencies and build
+          # Build backend
+          cd backend
           npm ci
           npm run build
+          cd ..
+
+          # Create deployment directory
+          mkdir -p deploy
+          cp -r backend/* deploy/
+          cp -r frontend/dist deploy/public
           
-          # Copy frontend build
-          mkdir -p dist/public
-          cp -r ../frontend/dist/* dist/public/
+          # Create production package.json
+          cd deploy
+          jq '. + {"scripts":{"start":"node dist/main.js"}} + {"engines":{"node":"18.x"}}' package.json > package.json.new
+          mv package.json.new package.json
           
           # Create Procfile
           echo "web: npm start" > Procfile
@@ -55,7 +56,7 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
           HEROKU_APP_NAME: attendance-argjend
         run: |
-          cd backend
+          cd deploy
           git init
           git add .
           git config --global user.email "github-actions@github.com"

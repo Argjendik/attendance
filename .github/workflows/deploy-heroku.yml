@@ -49,8 +49,8 @@ jobs:
           mkdir -p public
           cp -r ../frontend/dist/* public/
 
-          # Move @nestjs/cli to dependencies for Heroku build
-          jq '.dependencies["@nestjs/cli"] = .devDependencies["@nestjs/cli"] | del(.devDependencies["@nestjs/cli"])' package.json > package.json.tmp
+          # Update package.json for production
+          jq '.scripts.build = "npx nest build" | .dependencies["@nestjs/cli"] = .devDependencies["@nestjs/cli"] | del(.devDependencies["@nestjs/cli"])' package.json > package.json.tmp
           mv package.json.tmp package.json
 
           # Install production dependencies

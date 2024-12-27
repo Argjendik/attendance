@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
-    "preview": "vite preview"
+    "build": "npx vite build",
+    "dev": "npx vite",
+    "preview": "npx vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -13,13 +13,13 @@
     "@mui/icons-material": "^5.14.3",
     "@mui/material": "^5.14.3",
     "@tanstack/react-query": "^4.32.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "axios": "^1.4.0",
     "dayjs": "^1.11.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
     "react-toastify": "^11.0.2",
-    "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.10"
   },

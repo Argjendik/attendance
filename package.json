@@ -6,7 +6,7 @@
     "node": "18.x"
   },
   "scripts": {
-    "heroku-postbuild": "cd frontend && npm install && npm run build && cd ../backend && npm install && npm run build && mkdir -p dist && cp -r ../frontend/dist/* dist/",
+    "heroku-postbuild": "npm install -g vite && cd frontend && npm install && npm run build && cd ../backend && npm install && npm run build && mkdir -p dist && cp -r ../frontend/dist/* dist/",
     "start": "cd backend && npm start"
   },
   "devDependencies": {

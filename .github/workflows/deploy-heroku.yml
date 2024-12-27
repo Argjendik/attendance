@@ -22,22 +22,31 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Install dependencies
+      - name: Install dependencies and build frontend
+        run: |
+          cd frontend
+          npm install
+          npm install -g vite
+          npm run build
+          cd ..
+
+      - name: Install dependencies and build backend
         working-directory: ./backend
         run: |
           npm install
           npm install -g @nestjs/cli
           sudo npm install -g prisma
+          npm run build
 
       - name: Generate Prisma Client
         working-directory: ./backend
         run: |
           sudo npx prisma generate
 
-      - name: Build application
-        working-directory: ./backend
+      - name: Copy frontend build to backend
         run: |
-          npm run build
+          mkdir -p backend/dist/public
+          cp -r frontend/dist/* backend/dist/public/
 
       - name: Create Procfile
         working-directory: ./backend

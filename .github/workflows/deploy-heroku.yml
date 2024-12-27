@@ -22,36 +22,29 @@ jobs:
         run: |
           curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Install dependencies and build frontend
+      - name: Install and build frontend
         run: |
           cd frontend
           npm install
-          npm install -g vite
           npm run build
           cd ..
 
-      - name: Install dependencies and build backend
+      - name: Install and build backend
         working-directory: ./backend
         run: |
           npm install
-          npm install -g @nestjs/cli
-          sudo npm install -g prisma
           npm run build
+          mkdir -p dist/public
+          cp -r ../frontend/dist/* dist/public/
 
-      - name: Generate Prisma Client
-        working-directory: ./backend
-        run: |
-          sudo npx prisma generate
-
-      - name: Copy frontend build to backend
-        run: |
-          mkdir -p backend/dist/public
-          cp -r frontend/dist/* backend/dist/public/
-
-      - name: Create Procfile
+      - name: Create Procfile and package.json
         working-directory: ./backend
         run: |
           echo "web: npm run start:prod" > Procfile
+          echo '{"engines":{"node":"18.x"}}' > package.json.temp
+          jq '. * input' package.json package.json.temp > package.json.new
+          mv package.json.new package.json
+          rm package.json.temp
 
       - name: Deploy to Heroku
         env:
@@ -68,4 +61,6 @@ jobs:
           heroku buildpacks:clear --app $HEROKU_APP_NAME || true
           heroku buildpacks:set heroku/nodejs --app $HEROKU_APP_NAME
           heroku config:set NPM_CONFIG_PRODUCTION=false --app $HEROKU_APP_NAME
+          heroku config:set NODE_ENV=production --app $HEROKU_APP_NAME
+          heroku config:set SKIP_BUILD=true --app $HEROKU_APP_NAME
           git push heroku HEAD:main --force 

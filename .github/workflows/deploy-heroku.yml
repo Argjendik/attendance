@@ -32,24 +32,33 @@ jobs:
           npm run build
           cd ..
 
-          # Build backend
-          cd backend
-          npm ci
-          npm run build
-          cd ..
-
           # Create deployment directory
           mkdir -p deploy
+          
+          # Copy backend files
           cp -r backend/* deploy/
-          cp -r frontend/dist deploy/public
+          rm -rf deploy/public || true
+          mkdir -p deploy/public
+          cp -r frontend/dist/* deploy/public/
           
           # Create production package.json
           cd deploy
-          jq '. + {"scripts":{"start":"node dist/main.js"}} + {"engines":{"node":"18.x"}}' package.json > package.json.new
+          jq '. + {
+            "scripts": {
+              "start": "node dist/main.js"
+            },
+            "engines": {
+              "node": "18.x"
+            }
+          }' package.json > package.json.new
           mv package.json.new package.json
           
           # Create Procfile
           echo "web: npm start" > Procfile
+          
+          # Build backend in the deploy directory
+          npm ci
+          npm run build
 
       - name: Deploy to Heroku
         env:

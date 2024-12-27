@@ -2,13 +2,19 @@ import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, BadRequestE
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard, RolesGuard, Roles } from '../auth';
 import * as bcrypt from 'bcrypt';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private prisma: PrismaService) {}
 
   @Get('profile')
+  @ApiOperation({ summary: 'Get user profile', description: 'Get the profile of the currently logged-in user' })
+  @ApiResponse({ status: 200, description: 'Profile retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getProfile(@Request() req) {
     try {
       const user = await this.prisma.user.findUnique({
@@ -36,6 +42,24 @@ export class UsersController {
 
   @Post()
   @Roles('ADMIN')
+  @ApiOperation({ summary: 'Create user', description: 'Create a new user (Admin only)' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['email', 'password', 'name', 'role'],
+      properties: {
+        email: { type: 'string', example: 'user@example.com' },
+        password: { type: 'string', example: 'password123' },
+        name: { type: 'string', example: 'John Doe' },
+        role: { type: 'string', enum: ['ADMIN', 'HR', 'MANAGER'], example: 'HR' },
+        officeIds: { type: 'array', items: { type: 'number' }, example: [1, 2] }
+      }
+    }
+  })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   async create(@Body() data: any) {
     if (!data.email || !data.password || !data.name || !data.role) {
       throw new BadRequestException('Missing required fields: email, password, name, role');
@@ -48,7 +72,6 @@ export class UsersController {
       role: data.role,
     };
 
-    // Only include offices if officeIds is provided
     if (data.officeIds && Array.isArray(data.officeIds)) {
       Object.assign(userData, {
         offices: {
@@ -75,6 +98,10 @@ export class UsersController {
 
   @Get()
   @Roles('ADMIN')
+  @ApiOperation({ summary: 'Get all users', description: 'Get a list of all users (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   async findAll() {
     const users = await this.prisma.user.findMany({
       include: {
@@ -97,6 +124,21 @@ export class UsersController {
 
   @Put(':id/role')
   @Roles('ADMIN')
+  @ApiOperation({ summary: 'Update user role', description: 'Update a user\'s role and office assignments (Admin only)' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['role'],
+      properties: {
+        role: { type: 'string', enum: ['ADMIN', 'HR', 'MANAGER'], example: 'HR' },
+        officeIds: { type: 'array', items: { type: 'number' }, example: [1, 2] }
+      }
+    }
+  })
+  @ApiResponse({ status: 200, description: 'User role updated successfully' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   async updateRole(@Param('id') id: string, @Body() data: any) {
     if (!data.role) {
       throw new BadRequestException('Role is required');
@@ -131,6 +173,10 @@ export class UsersController {
 
   @Delete(':id')
   @Roles('ADMIN')
+  @ApiOperation({ summary: 'Delete user', description: 'Delete a user (Admin only)' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin only' })
   async deleteUser(@Param('id') id: string) {
     await this.prisma.user.delete({
       where: { id: parseInt(id) },

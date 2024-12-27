@@ -50,7 +50,7 @@ jobs:
           cp -r ../frontend/dist/* public/
 
           # Update package.json for production
-          jq '.scripts.build = "npx nest build" | .dependencies["@nestjs/cli"] = .devDependencies["@nestjs/cli"] | del(.devDependencies["@nestjs/cli"])' package.json > package.json.tmp
+          jq '.scripts.build = "node node_modules/@nestjs/cli/bin/nest.js build" | .dependencies["@nestjs/cli"] = .devDependencies["@nestjs/cli"] | del(.devDependencies["@nestjs/cli"])' package.json > package.json.tmp
           mv package.json.tmp package.json
 
           # Install production dependencies

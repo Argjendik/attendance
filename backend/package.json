@@ -17,7 +17,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main.js",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy"
+    "prisma:migrate": "prisma migrate deploy",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

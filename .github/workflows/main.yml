@@ -38,5 +38,4 @@ jobs:
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
         heroku_app_name: "attendance-argjend"
         heroku_email: "argjend.k@excelentis.org"
-        appdir: "backend"
-        procfile: "web: npm run start:prod" 
+        appdir: "backend" 

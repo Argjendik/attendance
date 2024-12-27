@@ -52,6 +52,21 @@ jobs:
 
           # Install production dependencies
           npm install --production
+          npm install -g @nestjs/cli
+          
+          # Update package.json with Node.js version and scripts
+          echo '{
+            "engines": {
+              "node": "18.x"
+            },
+            "scripts": {
+              "postinstall": "prisma generate",
+              "start": "node dist/main.js"
+            }
+          }' > package.json.tmp
+          jq -s '.[0] * .[1]' package.json package.json.tmp > package.json.new
+          mv package.json.new package.json
+          rm package.json.tmp
           
           # Create Procfile
           echo "web: npm start" > Procfile

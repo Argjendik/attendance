@@ -6,6 +6,7 @@ import { AgentsController } from './agents/agents.controller';
 import { OfficesController } from './offices/offices.controller';
 import { AttendanceController } from './attendance/attendance.controller';
 import { RfidModule } from './rfid/rfid.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RfidModule } from './rfid/rfid.module';
     RfidModule,
   ],
   controllers: [
+    AppController,
     UsersController,
     AgentsController,
     OfficesController,

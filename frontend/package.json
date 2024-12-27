@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "npx vite build",
-    "dev": "npx vite",
-    "preview": "npx vite preview"
+    "build": "./node_modules/.bin/vite build",
+    "dev": "./node_modules/.bin/vite",
+    "preview": "./node_modules/.bin/vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

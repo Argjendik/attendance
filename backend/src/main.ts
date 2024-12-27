@@ -1,54 +1,51 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
+import { join } from 'path';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
   
-  // Enable CORS with proper configuration
-  app.enableCors({
-    origin: true, // Allow all origins temporarily
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
-    maxAge: 3600
-  });
+  // Enable CORS
+  app.enableCors();
   
-  // Global validation pipe
+  // Validation pipe
   app.useGlobalPipes(new ValidationPipe());
-  
-  // Swagger configuration
-  const config = new DocumentBuilder()
-    .setTitle('Attendance System API')
-    .setDescription('API documentation for the Attendance System')
-    .setVersion('1.0.0')
-    .addBearerAuth({
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
-      in: 'header'
-    })
-    .build();
 
+  // Swagger setup
+  const config = new DocumentBuilder()
+    .setTitle('Attendance API')
+    .setDescription('API documentation for the Attendance system')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  // Calculate frontend dist path
+  const frontendPath = join(__dirname, '../../../frontend/dist');
+  logger.log(`Serving frontend from: ${frontendPath}`);
+
+  // Serve static frontend files
+  app.use(express.static(frontendPath));
   
-  // Serve Swagger UI with proper configuration
-  SwaggerModule.setup('api', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-      docExpansion: 'none',
-      filter: true,
-      showRequestDuration: true,
-      tryItOutEnabled: true
-    },
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'Attendance System API Documentation'
+  // Serve index.html for any unmatched routes (client-side routing)
+  app.use('*', (req, res, next) => {
+    if (req.url.startsWith('/api')) {
+      next();
+    } else {
+      const indexPath = join(frontendPath, 'index.html');
+      logger.log(`Serving index.html from: ${indexPath}`);
+      res.sendFile(indexPath);
+    }
   });
-  
-  const port = process.env.PORT || 3001;
+
+  const port = process.env.PORT || 3000;
   await app.listen(port);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  logger.log(`Application is running on port ${port}`);
 }
 bootstrap(); 

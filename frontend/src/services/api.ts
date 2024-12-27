@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: 'https://attendance-argjend-5b101d34fb4a.herokuapp.com',
   headers: {
     'Content-Type': 'application/json',
   } as AxiosRequestConfig['headers'],
@@ -25,6 +25,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized access
       localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userEmail');
       window.location.href = '/login';
     }
     return Promise.reject(error);

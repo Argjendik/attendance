@@ -25,10 +25,11 @@ jobs:
       - name: Install and build frontend
         run: |
           cd frontend
-          npm ci
-          npm install -D vite
-          npm install -D @vitejs/plugin-react
-          NODE_ENV=production ./node_modules/.bin/vite build
+          rm -rf node_modules package-lock.json
+          npm install
+          npm install -D @rollup/rollup-linux-x64-gnu
+          npm install -D vite @vitejs/plugin-react
+          npm run build
           cd ..
 
       - name: Install and build backend

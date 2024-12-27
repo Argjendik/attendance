@@ -32,29 +32,28 @@ jobs:
           npm run build
           cd ..
 
-          # Build backend first
+          # Build backend
           cd backend
           npm ci
           npm install -g @nestjs/cli
           npm run build
           cd ..
 
-          # Create deployment directory
+          # Create deployment directory with clean structure
           mkdir -p deploy
+          cd deploy
           
-          # Copy backend files
-          cp -r backend/* deploy/
-          cp -r backend/dist deploy/
-          rm -rf deploy/public || true
-          mkdir -p deploy/public
-          cp -r frontend/dist/* deploy/public/
+          # Copy only the necessary backend files
+          cp -r ../backend/package*.json .
+          cp -r ../backend/dist .
+          cp -r ../backend/prisma .
+          mkdir -p public
+          cp -r ../frontend/dist/* public/
           
           # Create production package.json
-          cd deploy
           jq '. + {
             "scripts": {
-              "start": "node dist/main.js",
-              "build": "nest build"
+              "start": "node dist/main.js"
             },
             "engines": {
               "node": "18.x"

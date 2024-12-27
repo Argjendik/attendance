@@ -18,7 +18,7 @@
     "start:prod": "node dist/main.js",
     "prisma:generate": "node ./node_modules/prisma/build/index.js generate",
     "prisma:migrate": "node ./node_modules/prisma/build/index.js migrate deploy",
-    "heroku-postbuild": "npm install && npm run build"
+    "heroku-postbuild": "npm ci && npm run build"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

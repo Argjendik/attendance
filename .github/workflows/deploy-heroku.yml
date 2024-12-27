@@ -34,7 +34,7 @@ jobs:
 
           # Build backend
           cd backend
-          npm ci
+          npm install
           npm install -g @nestjs/cli
           npm run build
           cd ..
@@ -49,36 +49,10 @@ jobs:
           cp -r ../backend/prisma .
           mkdir -p public
           cp -r ../frontend/dist/* public/
-          
-          # Create production package.json
-          jq '. + {
-            "scripts": {
-              "start": "node dist/main.js"
-            },
-            "engines": {
-              "node": "18.x"
-            },
-            "dependencies": {
-              "@nestjs/cli": "^10.0.0",
-              "@nestjs/common": "^10.0.0",
-              "@nestjs/core": "^10.0.0",
-              "@nestjs/jwt": "^10.0.0",
-              "@nestjs/passport": "^10.0.0",
-              "@nestjs/platform-express": "^10.0.0",
-              "@nestjs/swagger": "^7.0.0",
-              "@prisma/client": "^5.0.0",
-              "class-validator": "^0.14.0",
-              "dayjs": "^1.11.10",
-              "passport": "^0.6.0",
-              "passport-jwt": "^4.0.1",
-              "prisma": "^5.0.0",
-              "reflect-metadata": "^0.1.13",
-              "rxjs": "^7.8.1",
-              "@types/passport-jwt": "^3.0.8"
-            }
-          }' package.json > package.json.new
-          mv package.json.new package.json
 
+          # Install production dependencies
+          npm install --production
+          
           # Create Procfile
           echo "web: npm start" > Procfile
 

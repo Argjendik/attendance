@@ -27,7 +27,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   // Calculate frontend dist path
-  const frontendPath = join(__dirname, '../../../frontend/dist');
+  const frontendPath = join(__dirname, '../../dist');
   logger.log(`Serving frontend from: ${frontendPath}`);
 
   // Serve static frontend files

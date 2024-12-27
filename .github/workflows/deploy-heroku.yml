@@ -51,6 +51,6 @@ jobs:
           git config --global user.name "GitHub Actions"
           git commit -m "Deploy to Heroku"
           git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git || true
-          heroku buildpacks:clear || true
-          heroku buildpacks:set heroku/nodejs
+          heroku buildpacks:clear --app $HEROKU_APP_NAME || true
+          heroku buildpacks:set heroku/nodejs --app $HEROKU_APP_NAME
           git push heroku HEAD:main --force 

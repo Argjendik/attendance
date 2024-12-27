@@ -3,9 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
-    "preview": "vite preview"
+    "build": "npx vite build",
+    "dev": "npx vite",
+    "preview": "npx vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
     "react-toastify": "^11.0.2",
+    "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.10"
   },
@@ -26,7 +27,6 @@
     "@mui/x-date-pickers": "^7.23.3",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
-    "@types/react-toastify": "^4.0.2",
-    "@vitejs/plugin-react": "^4.2.1"
+    "@types/react-toastify": "^4.0.2"
   }
 }

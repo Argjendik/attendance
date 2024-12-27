@@ -1,11 +1,11 @@
 {
   "name": "attendance-system-web",
+  "private": true,
   "version": "1.0.0",
   "scripts": {
-    "start": "vite",
-    "build": "npx tsc && vite build",
-    "serve": "vite preview",
-    "test": "jest"
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

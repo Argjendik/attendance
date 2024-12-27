@@ -2,8 +2,11 @@
   "name": "attendance",
   "version": "1.0.0",
   "description": "Attendance System",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
-    "heroku-postbuild": "cd frontend && npm install && npm run build && cd ../backend && npm install && npm run build && cp -r ../frontend/dist ../backend/",
+    "heroku-postbuild": "cd frontend && npm install && npm install -g typescript && npm run build && cd ../backend && npm install && npm run build && cp -r ../frontend/dist ../backend/",
     "start": "cd backend && npm start"
   }
 } 

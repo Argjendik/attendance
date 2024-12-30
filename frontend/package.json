@@ -8,14 +8,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-
     "vite": "^5.0.10",
     "@vitejs/plugin-react": "^4.2.1",
-
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.3",
     "@mui/material": "^5.14.3",
+    "@mui/x-date-pickers": "^6.18.6",
     "@tanstack/react-query": "^4.32.0",
     "axios": "^1.4.0",
     "dayjs": "^1.11.9",
@@ -26,10 +25,8 @@
     "typescript": "^5.3.3"
   },
   "devDependencies": {
-   
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "@types/react-toastify": "^4.0.2"
-
   }
 }

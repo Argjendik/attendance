@@ -14,6 +14,7 @@
     "@mui/material": "^5.14.3",
     "@mui/x-date-pickers": "^6.18.6",
     "@tanstack/react-query": "^4.32.0",
+    "@vitejs/plugin-react": "^4.0.4",
     "axios": "^1.4.0",
     "dayjs": "^1.11.9",
     "react": "^18.2.0",
@@ -22,9 +23,6 @@
     "react-toastify": "^11.0.2",
     "typescript": "^5.3.3",
     "vite": "^4.5.1",
-    "@vitejs/plugin-react": "^4.0.4"
-  },
-  "devDependencies": {
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "@types/react-toastify": "^4.0.2"

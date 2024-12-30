@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -49,29 +50,36 @@ jobs:
           mkdir -p public
           cp -r ../frontend/dist/* public/
 
-          # Update package.json for production
-          jq '.scripts.build = "node node_modules/@nestjs/cli/bin/nest.js build" | .dependencies["@nestjs/cli"] = .devDependencies["@nestjs/cli"] | del(.devDependencies["@nestjs/cli"])' package.json > package.json.tmp
-          mv package.json.tmp package.json
-
-          # Install production dependencies
-          npm install --production
-          
-          # Update package.json with Node.js version and scripts
+          # Create production package.json
           echo '{
+            "name": "attendance-system",
             "engines": {
               "node": "18.x"
             },
             "scripts": {
               "postinstall": "prisma generate",
               "start": "node dist/main.js"
+            },
+            "dependencies": {
+              "@nestjs/common": "^10.0.0",
+              "@nestjs/config": "^3.3.0",
+              "@nestjs/core": "^10.0.0",
+              "@nestjs/platform-express": "^10.0.0",
+              "@prisma/client": "^5.0.0",
+              "@nestjs/jwt": "^10.1.0",
+              "@nestjs/passport": "^10.0.0",
+              "bcrypt": "^5.1.0",
+              "passport": "^0.7.0",
+              "passport-jwt": "^4.0.1",
+              "passport-local": "^1.0.0",
+              "reflect-metadata": "^0.1.13",
+              "rxjs": "^7.8.1"
             }
-          }' > package.json.tmp
-          jq -s '.[0] * .[1]' package.json package.json.tmp > package.json.new
-          mv package.json.new package.json
-          rm package.json.tmp
+          }' > package.json
           
           # Create Procfile
-          echo "web: npm start" > Procfile
+          echo "release: prisma migrate deploy" > Procfile
+          echo "web: npm start" >> Procfile
 
       - name: Deploy to Heroku
         env:
@@ -84,32 +92,17 @@ jobs:
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           git commit -m "Deploy to Heroku"
-          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git || true
+          
+          # Clear and set buildpack
           heroku buildpacks:clear --app $HEROKU_APP_NAME || true
           heroku buildpacks:set heroku/nodejs --app $HEROKU_APP_NAME
           
-          # Set environment variables first
+          # Set environment variables
           heroku config:set DATABASE_URL="${{ secrets.DATABASE_URL }}" --app $HEROKU_APP_NAME
           heroku config:set JWT_SECRET="${{ secrets.JWT_SECRET }}" --app $HEROKU_APP_NAME
           heroku config:set NPM_CONFIG_PRODUCTION=false --app $HEROKU_APP_NAME
           heroku config:set NODE_ENV=production --app $HEROKU_APP_NAME
           
-          # Create a clean package.json for production
-          echo '{
-            "engines": {
-              "node": "18.x"
-            },
-            "scripts": {
-              "postinstall": "prisma generate",
-              "build": "node node_modules/@nestjs/cli/bin/nest.js build",
-              "start": "node dist/main.js"
-            }
-          }' > package.json.tmp
-          jq -s '.[0] * .[1]' package.json package.json.tmp > package.json.new
-          mv package.json.new package.json
-          rm package.json.tmp
-
-          git add .
-          git commit -m "Update package.json for production"
-          
+          # Deploy to Heroku
+          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git || true
           git push heroku HEAD:main --force 

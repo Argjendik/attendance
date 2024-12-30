@@ -25,20 +25,6 @@ jobs:
 
       - name: Build and prepare for deployment
         run: |
-          # Build frontend
-          cd frontend
-          npm install
-          npm install -D @rollup/rollup-linux-x64-gnu
-          npm install -D vite @vitejs/plugin-react
-          npm run build
-          cd ..
-
-          # Build backend
-          cd backend
-          npm install
-          npm run build
-          cd ..
-
           # Create deployment directory with clean structure
           mkdir -p deploy
           cd deploy
@@ -53,9 +39,10 @@ jobs:
               "node": "18.x"
             },
             "scripts": {
-              "postinstall": "prisma generate",
+              "postinstall": "prisma generate && npm run build",
+              "build": "cd frontend && npm install && npm run build && cd ../backend && npm install && npm run build && cd .. && cp -r frontend/dist/* backend/dist/",
               "migrate:deploy": "prisma migrate deploy",
-              "start": "node dist/main.js"
+              "start": "cd backend && npm start"
             },
             "dependencies": {
               "@nestjs/common": "^10.0.0",
@@ -80,20 +67,13 @@ jobs:
               "rxjs": "^7.8.1",
               "swagger-ui-express": "^5.0.0",
               "prisma": "^5.0.0"
-            }
+            },
+            "workspaces": ["frontend", "backend"]
           }' > package.json
 
-          # Create .npmrc to force npm install instead of npm ci
-          echo "prefer-install=install" > .npmrc
-          
-          # Install dependencies after Prisma files are in place
-          npm install
-          
-          # Copy backend dist files
-          cp -r ../backend/dist .
-          
-          # Copy frontend files to dist directory (not public)
-          cp -r ../frontend/dist/* dist/
+          # Copy frontend and backend directories
+          cp -r ../frontend .
+          cp -r ../backend .
           
           # Create Procfile with database URL check
           echo 'release: if [ -n "$DATABASE_URL" ]; then npm run migrate:deploy; else echo "DATABASE_URL is not set"; exit 1; fi' > Procfile

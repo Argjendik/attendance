@@ -42,7 +42,7 @@ jobs:
             },
             "scripts": {
               "postinstall": "prisma generate && npm run build",
-              "build": "cd frontend && npm run build && cd ../backend && npm run build && cd .. && cp -r frontend/dist/* backend/dist/",
+              "build": "cd frontend && npm install && node ./node_modules/vite/bin/vite.js build && cd ../backend && npm install && npm run build && cd .. && cp -r frontend/dist/* backend/dist/",
               "migrate:deploy": "prisma migrate deploy",
               "start": "cd backend && npm start"
             },

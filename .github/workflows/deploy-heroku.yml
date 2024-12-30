@@ -72,6 +72,7 @@ jobs:
               "class-transformer": "^0.5.1",
               "class-validator": "^0.14.0",
               "dayjs": "^1.11.13",
+              "express": "^4.18.2",
               "passport": "^0.7.0",
               "passport-jwt": "^4.0.1",
               "passport-local": "^1.0.0",
@@ -88,10 +89,11 @@ jobs:
           # Install dependencies after Prisma files are in place
           npm install
           
-          # Copy remaining application files
+          # Copy backend dist files
           cp -r ../backend/dist .
-          mkdir -p public
-          cp -r ../frontend/dist/* public/
+          
+          # Copy frontend files to dist directory (not public)
+          cp -r ../frontend/dist/* dist/
           
           # Create Procfile with database URL check
           echo 'release: if [ -n "$DATABASE_URL" ]; then npm run migrate:deploy; else echo "DATABASE_URL is not set"; exit 1; fi' > Procfile

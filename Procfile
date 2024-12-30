@@ -1,1 +1,2 @@
-web: cd backend && npm install --no-audit && npm start 
+release: cd backend && npm install && npx prisma migrate deploy
+web: cd backend && npm install && npm start 

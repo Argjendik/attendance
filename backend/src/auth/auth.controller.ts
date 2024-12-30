@@ -2,7 +2,7 @@ import { Controller, Post, Body, UnauthorizedException, Get } from '@nestjs/comm
 import { AuthService } from './auth.service';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { PrismaService } from '../prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @ApiTags('Authentication')
 @Controller('auth')

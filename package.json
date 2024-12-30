@@ -8,6 +8,9 @@
     "postinstall": "cd backend && npm install && npx prisma generate && npm run build && cd ../frontend && npm install && npm run build && cd .. && cp -r frontend/dist/* backend/dist/",
     "start": "cd backend && npm start"
   },
+  "dependencies": {
+    "bcryptjs": "^2.4.3"
+  },
   "cacheDirectories": [
     "node_modules",
     "frontend/node_modules",

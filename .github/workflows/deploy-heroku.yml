@@ -43,14 +43,7 @@ jobs:
           mkdir -p deploy
           cd deploy
           
-          # Copy only the necessary backend files
-          cp -r ../backend/package*.json .
-          cp -r ../backend/dist .
-          cp -r ../backend/prisma .
-          mkdir -p public
-          cp -r ../frontend/dist/* public/
-
-          # Create production package.json
+          # Create production package.json and install dependencies
           echo '{
             "name": "attendance-system",
             "engines": {
@@ -84,10 +77,22 @@ jobs:
               "prisma": "^5.0.0"
             }
           }' > package.json
+
+          # Install dependencies and generate package-lock.json
+          npm install
+          
+          # Copy necessary files
+          cp -r ../backend/dist .
+          cp -r ../backend/prisma .
+          mkdir -p public
+          cp -r ../frontend/dist/* public/
           
           # Create Procfile with database URL check
           echo 'release: if [ -n "$DATABASE_URL" ]; then npm run migrate:deploy; else echo "DATABASE_URL is not set"; exit 1; fi' > Procfile
           echo "web: npm start" >> Procfile
+
+          # Create .npmrc to force npm install instead of npm ci
+          echo "prefer-install=install" > .npmrc
 
       - name: Deploy to Heroku
         env:

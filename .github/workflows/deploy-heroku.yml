@@ -4,124 +4,41 @@ on:
   push:
     branches:
       - main
-      - master
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v2
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: '18.x'
 
-      - name: Install Heroku CLI
+      - name: Install dependencies and build
         run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
+          # Install frontend dependencies and build
+          cd frontend
+          npm install
+          npm run build
+          cd ..
 
-      - name: Build and prepare for deployment
-        run: |
-          # Create deployment directory with clean structure
-          mkdir -p deploy
-          cd deploy
-          
-          # First copy the Prisma files
-          cp -r ../backend/prisma .
-          
-          # Create production package.json
-          # NOTE: We removed 'npm install' calls from the "build" script
-          # so that Heroku does the installing/compiling natively.
-          echo '{
-            "name": "attendance-system",
-            "engines": {
-              "node": "18.x"
-            },
-            "scripts": {
-              "postinstall": "prisma generate && npm run build",
-              "build": "cd frontend && npm install && node ./node_modules/vite/bin/vite.js build && cd ../backend && npm install && npm run build && cd .. && cp -r frontend/dist/* backend/dist/",
-              "migrate:deploy": "prisma migrate deploy",
-              "start": "cd backend && npm start"
-            },
-            "dependencies": {
-              "@nestjs/common": "^10.0.0",
-              "@nestjs/config": "^3.3.0",
-              "@nestjs/core": "^10.0.0",
-              "@nestjs/platform-express": "^10.0.0",
-              "@nestjs/swagger": "^7.1.1",
-              "@nestjs/jwt": "^10.1.0",
-              "@nestjs/passport": "^10.0.0",
-              "@nestjs/platform-socket.io": "^10.0.0",
-              "@nestjs/websockets": "^10.0.0",
-              "@prisma/client": "^5.0.0",
-              "bcrypt": "^5.1.0",
-              "class-transformer": "^0.5.1",
-              "class-validator": "^0.14.0",
-              "dayjs": "^1.11.13",
-              "express": "^4.18.2",
-              "passport": "^0.7.0",
-              "passport-jwt": "^4.0.1",
-              "passport-local": "^1.0.0",
-              "reflect-metadata": "^0.1.13",
-              "rxjs": "^7.8.1",
-              "swagger-ui-express": "^5.0.0",
-              "prisma": "^5.0.0"
-            },
-            "workspaces": ["frontend", "backend"]
-          }' > package.json
+          # Install backend dependencies and build
+          cd backend
+          npm install
+          npm run build
+          cd ..
 
-          # Copy frontend and backend directories
-          cp -r ../frontend .
-          cp -r ../backend .
-          
-          # Create Procfile with database URL check
-          echo 'release: if [ -n "$DATABASE_URL" ]; then npm run migrate:deploy; else echo "DATABASE_URL is not set"; exit 1; fi' > Procfile
-          echo "web: npm start" >> Procfile
+          # Copy frontend build to backend dist
+          mkdir -p backend/dist
+          cp -r frontend/dist/* backend/dist/
 
       - name: Deploy to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: attendance-argjend
-        run: |
-          cd deploy
-          git init
-          git add .
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git commit -m "Deploy to Heroku"
-          
-          # Clear and set buildpack
-          heroku buildpacks:clear --app $HEROKU_APP_NAME || true
-          heroku buildpacks:set heroku/nodejs --app $HEROKU_APP_NAME
-          
-          # Set environment variables with verification
-          echo "Setting up environment variables..."
-          if [ -n "${{ secrets.DATABASE_URL }}" ]; then
-            heroku config:set DATABASE_URL="${{ secrets.DATABASE_URL }}" --app $HEROKU_APP_NAME
-          else
-            echo "Error: DATABASE_URL secret is not set in GitHub repository"
-            exit 1
-          fi
-          
-          if [ -n "${{ secrets.JWT_SECRET }}" ]; then
-            heroku config:set JWT_SECRET="${{ secrets.JWT_SECRET }}" --app $HEROKU_APP_NAME
-          else
-            echo "Error: JWT_SECRET secret is not set in GitHub repository"
-            exit 1
-          fi
-          
-          heroku config:set NPM_CONFIG_PRODUCTION=false --app $HEROKU_APP_NAME
-          heroku config:set NODE_ENV=production --app $HEROKU_APP_NAME
-          
-          # Verify DATABASE_URL is set
-          if ! heroku config:get DATABASE_URL --app $HEROKU_APP_NAME | grep -q '^postgres://'; then
-            echo "Error: DATABASE_URL is not properly set in Heroku"
-            exit 1
-          fi
-          
-          # Deploy to Heroku
-          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git || true
-          git push heroku HEAD:main --force
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: attendance-argjend
+          heroku_email: argjend.k@excelentis.org
+          procfile: "web: cd backend && npm install --omit=dev && npm start"

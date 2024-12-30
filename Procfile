@@ -1,2 +1,1 @@
-release: cd backend && npx prisma migrate deploy
-web: cd backend && npm start 
+web: cd backend && npm install && npm start 

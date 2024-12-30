@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-/.pnp
+.pnp
 .pnp.js
 
 # Production build files
@@ -8,6 +8,10 @@ node_modules/
 /frontend/build/
 /frontend/dist/
 *.tsbuildinfo
+
+# Deployment folder (if you create a 'deploy' folder in GH actions)
+deploy/
+deploy/node_modules/
 
 # Environment variables
 .env
@@ -43,4 +47,4 @@ Thumbs.db
 
 # Misc
 *.pem
-.cache/ 
+.cache/

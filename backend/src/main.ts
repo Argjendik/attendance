@@ -33,15 +33,19 @@ async function bootstrap() {
   // Serve static frontend files
   app.use(express.static(frontendPath));
   
-  // Serve index.html for any unmatched routes (client-side routing)
-  app.use('*', (req, res, next) => {
-    if (req.url.startsWith('/api') || req.url.startsWith('/auth')) {
-      next();
-    } else {
-      const indexPath = join(frontendPath, 'index.html');
-      logger.log(`Serving index.html from: ${indexPath}`);
-      res.sendFile(indexPath);
+  // Handle API routes first
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
+      return next('route');
     }
+    next();
+  });
+
+  // Serve index.html for client-side routing
+  app.use('*', (req, res) => {
+    const indexPath = join(frontendPath, 'index.html');
+    logger.log(`Serving index.html from: ${indexPath}`);
+    res.sendFile(indexPath);
   });
 
   const port = process.env.PORT || 3000;

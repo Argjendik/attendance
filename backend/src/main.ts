@@ -32,7 +32,8 @@ async function bootstrap() {
 
   // Serve static frontend files AFTER API routes
   app.use((req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
+    const apiPaths = ['/api', '/auth', '/users', '/offices', '/agents', '/attendance'];
+    if (apiPaths.some(path => req.path.startsWith(path))) {
       return next();
     }
     if (req.path.includes('.')) {

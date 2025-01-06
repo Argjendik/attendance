@@ -3,14 +3,5 @@
   "clean_urls": true,
   "routes": {
     "/**": "index.html"
-  },
-  "https_only": true,
-  "headers": {
-    "/**": {
-      "Strict-Transport-Security": "max-age=31557600",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Authorization"
-    }
   }
 } 

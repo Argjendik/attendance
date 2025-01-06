@@ -5,8 +5,9 @@
     "node": "18.x"
   },
   "scripts": {
-    "build": "cd frontend && npm ci && npm run build && cd ../backend && npm ci && npm run build && cd .. && mkdir -p backend/dist && cp -r frontend/dist/* backend/dist/",
-    "start": "cd backend && npm start"
+    "build": "cd frontend && npm ci && npm run build && cd ../backend && npm ci && npm run build && cd .. && mkdir -p backend/dist/public && cp -r frontend/dist/* backend/dist/public/",
+    "start": "cd backend && npm start",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@nestjs/cli": "^10.0.0",

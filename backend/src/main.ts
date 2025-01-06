@@ -35,7 +35,7 @@ async function bootstrap() {
   
   // Serve index.html for any unmatched routes (client-side routing)
   app.use('*', (req, res, next) => {
-    if (req.url.startsWith('/api')) {
+    if (req.url.startsWith('/api') || req.url.startsWith('/auth')) {
       next();
     } else {
       const indexPath = join(frontendPath, 'index.html');

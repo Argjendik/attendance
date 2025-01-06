@@ -30,22 +30,18 @@ async function bootstrap() {
   const frontendPath = join(__dirname, 'public');
   logger.log(`Serving frontend from: ${frontendPath}`);
 
-  // Serve static frontend files
-  app.use(express.static(frontendPath));
-  
-  // Handle API routes first
+  // Serve static frontend files AFTER API routes
   app.use((req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
-      return next('route');
+      return next();
     }
-    next();
-  });
-
-  // Serve index.html for client-side routing
-  app.use('*', (req, res) => {
-    const indexPath = join(frontendPath, 'index.html');
-    logger.log(`Serving index.html from: ${indexPath}`);
-    res.sendFile(indexPath);
+    if (req.path.includes('.')) {
+      express.static(frontendPath)(req, res, next);
+    } else {
+      const indexPath = join(frontendPath, 'index.html');
+      logger.log(`Serving index.html from: ${indexPath}`);
+      res.sendFile(indexPath);
+    }
   });
 
   const port = process.env.PORT || 3000;

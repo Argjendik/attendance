@@ -5,9 +5,8 @@
     "node": "18.x"
   },
   "scripts": {
-    "build": "cd frontend && npm ci && npm run build && cd ../backend && npm ci && npm run build && cd .. && mkdir -p backend/dist/public && cp -r frontend/dist/* backend/dist/public/",
-    "start": "cd backend && npm start",
-    "postinstall": "npm run build"
+    "heroku-postbuild": "cd frontend && npm ci && npm run build && cd ../backend && npm ci && npm run build && cd .. && mkdir -p backend/dist/public && cp -r frontend/dist/* backend/dist/public/",
+    "start": "cd backend && npm run start:prod"
   },
   "dependencies": {
     "@nestjs/cli": "^10.0.0",
